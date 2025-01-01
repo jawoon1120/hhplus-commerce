@@ -1,3 +1,4 @@
+```plantuml
 @startuml use-case
 left to right direction
 
@@ -27,3 +28,4 @@ Customer --> queryOwnCoupon
 Customer --> payProduct
 Customer --> queryTopRankedProduct
 @enduml
+```
