@@ -41,7 +41,7 @@ usecase 중에서 묶을 수 있는 명사를 기준으로 도메인 추출 시�
 - 상품 조회 API
 
 ### ERD
-![](./images/erd.png)
+![](./images/erd2.png)
 
 
 ### 마일스톤
