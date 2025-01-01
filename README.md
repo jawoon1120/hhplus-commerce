@@ -29,3 +29,14 @@ usecase 중에서 묶을 수 있는 명사를 기준으로 도메인 추출 시�
 - 상위 상품 조회
 ![](./images/query-popular-product.png)
 
+### API 목록
+- 발급 가능 쿠폰 조회 API
+- 선착순 쿠폰 발행 API
+- 발행된 내 쿠폰 조회 API
+- 잔액 충전 API
+- 잔액 조회 API
+- 주문 API
+- 결제 API
+- 상위 상품 조회 API
+- 상품 조회 API
+
