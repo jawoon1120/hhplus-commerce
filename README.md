@@ -40,3 +40,5 @@ usecase 중에서 묶을 수 있는 명사를 기준으로 도메인 추출 시�
 - 상위 상품 조회 API
 - 상품 조회 API
 
+### ERD
+![](./images/erd.png)
