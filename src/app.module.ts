@@ -2,13 +2,26 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CouponModule } from './modules/coupon/coupon.module';
-import { BalanceModule } from './balance/balance.module';
-import { ProductModule } from './product/product.module';
-import { OrderModule } from './order/order.module';
-import { PaymentModule } from './payment/payment.module';
+import { BalanceModule } from './modules/balance/balance.module';
+import { ProductModule } from './modules/product/product.module';
+import { OrderModule } from './modules/order/order.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
+import { ConfigModule } from '@nestjs/config';
+import { AppConfigService } from './configs/configs.service';
+
+const serviceModules = [
+  CouponModule,
+  BalanceModule,
+  ProductModule,
+  OrderModule,
+  PaymentModule,
+];
 @Module({
-  imports: [CouponModule, BalanceModule, ProductModule, OrderModule, PaymentModule],
+  imports: [
+    ...serviceModules,
+    ConfigModule.forRoot(AppConfigService.getEnvConfigs()),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
