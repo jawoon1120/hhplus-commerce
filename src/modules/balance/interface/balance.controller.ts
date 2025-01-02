@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ChargeBalanceRequestDto } from './dto/balance-charge.dto';
 import {
   ApiCreatedResponse,
@@ -18,8 +18,12 @@ export class BalanceController {
   @ApiCreatedResponse({
     description: '잔액 충전 성공',
   })
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  chargeBalance(@Body() chargeDto: ChargeBalanceRequestDto): Promise<void> {
+  chargeBalance(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Body() chargeDto: ChargeBalanceRequestDto,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Param('userId') userId: number,
+  ): Promise<void> {
     return;
   }
 

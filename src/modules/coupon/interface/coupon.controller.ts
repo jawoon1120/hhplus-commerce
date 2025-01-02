@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CouponQueryDto } from './dto/coupon-query.dto';
 import {
   ApiCreatedResponse,
@@ -61,7 +61,10 @@ export class CouponController {
     description: '사용자 보유 쿠폰 조회 성공',
     type: [OwnedCouponQueryDto],
   })
-  getUserOwnedCoupons() {
+  getUserOwnedCoupons(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Param('userId') userId: number,
+  ): OwnedCouponQueryDto[] {
     const mockOwnedCoupons: OwnedCouponQueryDto[] = [
       {
         id: 1,

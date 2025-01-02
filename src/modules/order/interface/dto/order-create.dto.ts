@@ -20,6 +20,11 @@ export class OrderCreateRequestDto {
   @ValidateNested({ each: true })
   @Type(() => OrderDto)
   products: OrderDto[];
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  userId: number;
 }
 
 export class OrderCreateResponseDto {
