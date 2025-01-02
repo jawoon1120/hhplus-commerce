@@ -1,4 +1,4 @@
-import { getDatasource } from "./util";
+import { getDatasource } from './util';
 
 const down = async () => {
   await global.mysql.stop();
