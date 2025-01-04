@@ -1,14 +1,7 @@
 import { Module } from '@nestjs/common';
-import {
-  ConfigModule,
-  ConfigModuleOptions,
-  ConfigService,
-} from '@nestjs/config';
+import { ConfigModuleOptions, ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as Joi from 'joi';
-import { DataSourceOptions } from 'typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 
 @Module({})
 export class AppConfigService {
@@ -32,35 +25,9 @@ export class AppConfigService {
     };
   }
 
-  private static getCommonDatabaseConfig(
-    configService: ConfigService,
-  ): DataSourceOptions {
-    const dbConfig: DataSourceOptions = {
-      type: 'mysql',
-      host: configService.get<string>('RDB_HOST'),
-      port: configService.get<number>('RDB_PORT'),
-      username: configService.get<string>('RDB_USER'),
-      password: configService.get<string>('RDB_PASSWORD'),
-      database: configService.get<string>('RDB_NAME'),
-      synchronize: false,
-      logging: true,
-      entities: ['dist/**/entities/*.entity.{ts,js}'],
-      migrations: ['dist/migrations/**/*{.ts,.js}'],
-      namingStrategy: new SnakeNamingStrategy(),
-      migrationsRun: true,
-    };
+  static getDbconnectionstring(configService: ConfigService): string {
+    const connectionString = `mysql://${configService.get<string>('RDB_USER')}:${configService.get<string>('RDB_PASSWORD')}@${configService.get<string>('RDB_HOST')}:${configService.get<string>('RDB_PORT')}/${configService.get<string>('RDB_NAME')}`;
 
-    return dbConfig;
-  }
-
-  static getDatabaseConfigs(): TypeOrmModuleAsyncOptions {
-    return {
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) =>
-        ({
-          ...this.getCommonDatabaseConfig(configService),
-        }) as TypeOrmModuleAsyncOptions,
-      inject: [ConfigService],
-    };
+    return connectionString;
   }
 }
