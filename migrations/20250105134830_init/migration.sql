@@ -38,6 +38,7 @@ CREATE TABLE `Buyer` (
 -- CreateTable
 CREATE TABLE `Coupon` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
     `type` VARCHAR(191) NOT NULL,
     `discountAmount` INTEGER NOT NULL,
     `startDate` DATETIME(3) NOT NULL,

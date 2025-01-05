@@ -1,5 +1,6 @@
 model Coupon {
   id                Int            @id @default(autoincrement())
+  name              String
   type              String
   discountAmount    Int
   startDate         DateTime
