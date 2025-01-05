@@ -1,0 +1,12 @@
+model Product {
+  id            Int           @id @default(autoincrement())
+  name          String
+  price         Int
+  sellerId      Int
+  totalQuantity Int
+  stock         Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  orderDetails  OrderDetail[]
+}

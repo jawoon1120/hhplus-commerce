@@ -1,0 +1,11 @@
+model Buyer {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  balances      Balance?
+  issuedCoupons IssuedCoupon[]
+  orders        Order[]
+}

@@ -1,3 +1,11 @@
+### db migration
+
+```bash
+npm run migration:generate {migration_name}
+npm run migration:run
+```
+
+
 ### Use Case
 
 ![](./images/use-case-v2.png)

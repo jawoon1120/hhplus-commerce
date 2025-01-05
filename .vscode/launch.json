@@ -1,0 +1,152 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Gateway",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:local"],
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_ENV": "local"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Managing",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+          "app.main:app",
+          "--reload",
+          "--port",
+          "8001"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "python": "${userHome}/.pyenv/versions/3.10.13/envs/backend/bin/python",
+      "env": {
+          "PYTHONPATH": "${workspaceFolder}/../saas-msa-backend",
+          "ENV_STATE": "local"
+      },
+      "envFile": "${workspaceFolder}/../saas-msa-backend/settings/local.env",
+      "consoleName": "Managing"
+    },
+    {
+      "name": "Manufacturing",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+          "app.main:app",
+          "--reload",
+          "--port",
+          "8005"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "python": "${userHome}/.pyenv/versions/3.10.13/envs/manufacturing/bin/python",
+      "env": {
+          "PYTHONPATH": "${workspaceFolder}/../saas-manufactoring",
+          "ENV_STATE": "local"
+      },
+      "envFile": "${workspaceFolder}/../saas-manufactoring/app/settings/local.env",
+      "consoleName": "Manufacturing"
+    },
+    {
+      "name": "Support",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+          "app.main:app",
+          "--reload",
+          "--port",
+          "8006"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "python": "${userHome}/.pyenv/versions/3.10.13/envs/support/bin/python",
+      "env": {
+          "PYTHONPATH": "${workspaceFolder}/../saas-msa-support",
+          "ENV_STATE": "local"
+      },
+      "envFile": "${workspaceFolder}/../saas-msa-support/settings/local.env",
+      "consoleName": "Support"
+    },
+    {
+      "name": "Dataset-Upload",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+          "app.main:app",
+          "--reload",
+          "--port",
+          "8004"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "python": "${userHome}/.pyenv/versions/3.10.13/envs/data-upload/bin/python",
+      "env": {
+          "PYTHONPATH": "${workspaceFolder}/../saas-msa-dataset-upload",
+          "ENV_STATE": "local"
+      },
+      "envFile": "${workspaceFolder}/../saas-msa-dataset-upload/settings/local.env",
+      "consoleName": "Dataset-Upload"
+    },
+    {
+      "name": "Auth",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:local"],
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/../argmax-auth/dist/**/*.js"],
+      "cwd": "${workspaceFolder}/../argmax-auth",
+      "env": {
+        "NODE_ENV": "local"
+      },
+      "console": "integratedTerminal",
+    },
+    {
+      "name": "Noti",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:local"],
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/../saas-noti-emitter/dist/**/*.js"],
+      "cwd": "${workspaceFolder}/../saas-noti-emitter",
+      "env": {
+        "NODE_ENV": "local"
+      },
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "All Microservice",
+      "configurations": ["Managing","Dataset-Upload","Manufacturing","Support","Noti","Auth"],
+      "presentation": {
+        "hidden": false,
+        "group": "1_microservices",
+        "order": 2
+      },
+    },
+    {
+      "name": "All with GW",
+      "configurations": ["Managing","Dataset-Upload","Manufacturing","Support","Noti","Auth", "Gateway"],
+      "presentation": {
+        "hidden": false,
+        "group": "1_microservices",
+        "order": 1
+      },
+      "default": true
+    }
+  ]
+}

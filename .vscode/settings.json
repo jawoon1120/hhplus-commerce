@@ -1,0 +1,29 @@
+{
+  "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "eslint.format.enable": true,
+  "editor.suggest.showMethods": true,
+  "editor.suggest.preview": true,
+  "eslint.workingDirectories": [
+      {
+          "mode": "auto"
+      }
+  ],
+  "[markdown]": {
+      "editor.formatOnSave": false
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "[typescript]": {
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+      "editor.codeActionsOnSave": {
+          "source.organizeImports": "never"
+      }
+  }
+}
