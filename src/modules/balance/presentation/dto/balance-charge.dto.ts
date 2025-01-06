@@ -5,7 +5,7 @@ export class ChargeBalanceRequestDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  customerId: number;
 
   @ApiProperty()
   @IsNumber()

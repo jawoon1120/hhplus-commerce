@@ -6,9 +6,13 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { QueryBalanceResponseDto } from './dto/balance-query.dto';
+import { BalanceService } from '../application/balance.service';
+import { Balance } from '../domain/balance.domain';
 
-@Controller('/users/:userId/balances')
+@Controller('/users/:customerId/balances')
 export class BalanceController {
+  constructor(private readonly balanceService: BalanceService) {}
+
   // 잔책 충전 API 엔드포인트
   @Post()
   @ApiOperation({
@@ -18,13 +22,14 @@ export class BalanceController {
   @ApiCreatedResponse({
     description: '잔액 충전 성공',
   })
-  chargeBalance(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async chargeBalance(
     @Body() chargeDto: ChargeBalanceRequestDto,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Param('userId') userId: number,
-  ): Promise<void> {
-    return;
+    @Param('customerId') customerId: number,
+  ): Promise<Balance> {
+    return await this.balanceService.chargeBalance(
+      customerId,
+      chargeDto.amount,
+    );
   }
 
   // 잔책 조회 API 엔드포인트
@@ -37,10 +42,9 @@ export class BalanceController {
     type: QueryBalanceResponseDto,
     description: '잔액 조회 성공',
   })
-  checkBalance(): QueryBalanceResponseDto {
-    const mockBalance = {
-      amount: 10000,
-    };
-    return mockBalance;
+  async checkBalance(
+    @Param('customerId') customerId: number,
+  ): Promise<QueryBalanceResponseDto> {
+    return await this.balanceService.getBalance(customerId);
   }
 }
