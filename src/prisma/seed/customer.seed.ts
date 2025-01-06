@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
-export const seedBuyer = async (prisma: PrismaClient) => {
-  const buyer1 = await prisma.buyer.upsert({
+export const seedCustomer = async (prisma: PrismaClient) => {
+  const customer1 = await prisma.customer.upsert({
     where: { id: 1 },
     update: {},
     create: {
@@ -9,7 +9,7 @@ export const seedBuyer = async (prisma: PrismaClient) => {
     },
   });
 
-  const buyer2 = await prisma.buyer.upsert({
+  const customer2 = await prisma.customer.upsert({
     where: { id: 2 },
     update: {},
     create: {
@@ -17,7 +17,7 @@ export const seedBuyer = async (prisma: PrismaClient) => {
     },
   });
 
-  const buyer3 = await prisma.buyer.upsert({
+  const customer3 = await prisma.customer.upsert({
     where: { id: 3 },
     update: {},
     create: {
@@ -25,5 +25,5 @@ export const seedBuyer = async (prisma: PrismaClient) => {
     },
   });
 
-  console.log(buyer1, buyer2, buyer3);
+  console.log(customer1, customer2, customer3);
 };

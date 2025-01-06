@@ -1,0 +1,14 @@
+model OrderDetail {
+  id         Int       @id @default(autoincrement())
+  orderId    Int
+  productId  Int
+  totalPrice Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  order      Order     @relation(fields: [orderId], references: [id])
+  product    Product   @relation(fields: [productId], references: [id])
+
+  @@index([orderId], map: "OrderDetail_orderId_fkey")
+  @@index([productId], map: "OrderDetail_productId_fkey")
+}

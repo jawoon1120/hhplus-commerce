@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import { seedBuyer } from '../modules/buyer/infrastructure/buyer.seed';
-import { seedCoupon } from '../modules/coupon/infrastructure/coupon.seed';
-import { seedProduct } from '../modules/product/infrastructure/product.seed';
+import { seedCoupon } from './seed/coupon.seed';
+import { seedProduct } from './seed/product.seed';
+import { seedCustomer } from './seed/customer.seed';
 const prisma = new PrismaClient();
 async function main() {
-  await seedBuyer(prisma);
+  await seedCustomer(prisma);
   await seedCoupon(prisma);
   await seedProduct(prisma);
 }

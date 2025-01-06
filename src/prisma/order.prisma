@@ -1,0 +1,14 @@
+model Order {
+  id           Int           @id @default(autoincrement())
+  buyerId      Int
+  status       String
+  totalPrice   Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  Customer     Customer      @relation(fields: [buyerId], references: [id])
+  orderDetails OrderDetail[]
+  payments     Payment?
+
+  @@index([buyerId], map: "Order_buyerId_fkey")
+}
