@@ -9,7 +9,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { ConfigModule } from '@nestjs/config';
 import { AppConfigService } from './configs/configs.service';
 import { PrismaModule } from './infrastructure/database/prisma.module';
-import { BuyerModule } from './modules/buyer/buyer.module';
+import { CustomerModule } from './modules/customer/customer.module';
 
 const serviceModules = [
   CouponModule,
@@ -23,7 +23,7 @@ const serviceModules = [
     ...serviceModules,
     ConfigModule.forRoot(AppConfigService.getEnvConfigs()),
     PrismaModule,
-    BuyerModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
