@@ -15,6 +15,7 @@ export class PrismaService
           url: AppConfigService.getDbconnectionstring(configService),
         },
       },
+      log: ['query', 'info', 'warn', 'error'],
     });
   }
 
