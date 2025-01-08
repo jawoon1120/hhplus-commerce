@@ -25,6 +25,7 @@ describe('BalanceRepository 동시성 테스트', () => {
 
   it('should handle concurrent balance charge requests without loss', async () => {
     const customerId = 1; // 테스트할 고객 ID
+    const initialBalance = 1000; // Seed data 초기 잔액
     const chargeAmount = 100; // 충전할 금액
     const requests = Array.from({ length: 5 }, () =>
       balanceRepository.chargeBalance(customerId, chargeAmount),
@@ -40,15 +41,13 @@ describe('BalanceRepository 동시성 테스트', () => {
     });
 
     const balance = await balanceRepository.getBalanceByUserId(customerId);
-    expect(balance.amount).toBe(chargeAmount * 5);
+    expect(balance.amount).toBe(initialBalance + chargeAmount * 5);
   });
 
   it('should handle concurrent balance withdrawal requests without loss', async () => {
-    //seed data로 이미 customerId 1에 잔액 500이 있음
     const customerId = 1; // 테스트할 고객 ID
-    const initialBalance = 500; // 초기 잔액
+    const initialBalance = 1500; // 초기 잔액
     const withdrawAmount = 100; // 인출할 금액
-    await balanceRepository.chargeBalance(customerId, initialBalance); // 초기 잔액 충전
 
     const requests = Array.from({ length: 5 }, () =>
       balanceRepository.withdrawBalance(customerId, withdrawAmount),
@@ -64,6 +63,6 @@ describe('BalanceRepository 동시성 테스트', () => {
     });
 
     const balance = await balanceRepository.getBalanceByUserId(customerId);
-    expect(balance.amount).toBe(initialBalance + 500 - withdrawAmount * 5);
+    expect(balance.amount).toBe(initialBalance - withdrawAmount * 5);
   });
 });
