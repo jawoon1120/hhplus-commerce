@@ -6,4 +6,9 @@ export class QueryBalanceResponseDto {
   @IsNumber()
   @IsNotEmpty()
   amount: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  customerId: number;
 }

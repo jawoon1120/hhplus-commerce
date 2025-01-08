@@ -25,11 +25,16 @@ export class BalanceController {
   async chargeBalance(
     @Body() chargeDto: ChargeBalanceRequestDto,
     @Param('customerId') customerId: number,
-  ): Promise<Balance> {
-    return await this.balanceService.chargeBalance(
+  ): Promise<QueryBalanceResponseDto> {
+    const balance = await this.balanceService.chargeBalance(
       customerId,
       chargeDto.amount,
     );
+
+    return {
+      amount: balance.amount,
+      customerId: balance.customerId,
+    };
   }
 
   // 잔책 조회 API 엔드포인트
@@ -45,6 +50,10 @@ export class BalanceController {
   async checkBalance(
     @Param('customerId') customerId: number,
   ): Promise<QueryBalanceResponseDto> {
-    return await this.balanceService.getBalance(customerId);
+    const balance: Balance = await this.balanceService.getBalance(customerId);
+    return {
+      amount: balance.amount,
+      customerId: balance.customerId,
+    };
   }
 }
