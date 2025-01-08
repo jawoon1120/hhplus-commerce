@@ -29,5 +29,5 @@ export class ProductQueryDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  remainingQuantity: number;
+  stock: number;
 }

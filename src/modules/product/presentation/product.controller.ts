@@ -1,9 +1,12 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { ProductQueryDto } from './dto/product-query.dto';
+import { ProductService } from '../application/product.service';
 
 @Controller('products')
 export class ProductController {
+  constructor(private readonly productService: ProductService) {}
+
   @Get()
   @ApiOperation({
     summary: '상품 조회 with pagination',
@@ -13,21 +16,23 @@ export class ProductController {
     description: '상품 조회 성공',
     type: [ProductQueryDto],
   })
-  getProducts(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getProducts(
     @Query('page') page: number = 1,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Query('limit') limit: number = 10,
-  ): ProductQueryDto[] {
-    const mockProducts: ProductQueryDto[] = [
-      {
-        id: 1,
-        name: '상품1',
-        price: 10000,
-        remainingQuantity: 10,
-      },
-    ];
-    return mockProducts;
+  ): Promise<ProductQueryDto[]> {
+    const products = await this.productService.findWithPaginationAndLock(
+      page,
+      limit,
+    );
+
+    return products.map((product) => {
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+      };
+    });
   }
 
   @Get('/three-day-popular')
@@ -45,31 +50,31 @@ export class ProductController {
         id: 1,
         name: '인기상품1',
         price: 10000,
-        remainingQuantity: 5,
+        stock: 5,
       },
       {
         id: 2,
         name: '인기상품2',
         price: 20000,
-        remainingQuantity: 3,
+        stock: 3,
       },
       {
         id: 3,
         name: '인기상품3',
         price: 15000,
-        remainingQuantity: 8,
+        stock: 8,
       },
       {
         id: 4,
         name: '인기상품4',
         price: 25000,
-        remainingQuantity: 2,
+        stock: 2,
       },
       {
         id: 5,
         name: '인기상품5',
         price: 30000,
-        remainingQuantity: 4,
+        stock: 4,
       },
     ];
     return mockPopularProducts;
