@@ -6,6 +6,7 @@ const init = async () => {
   await Promise.all([initMysql()]);
 };
 let connectionString: string;
+
 const initMysql = async () => {
   //TODO: .env.test랑 연결
   const mysql = await new MySqlContainer('mysql:8')
@@ -16,9 +17,17 @@ const initMysql = async () => {
 
   global.mysql = mysql;
   connectionString = `mysql://root:pw@${mysql.getHost()}:${mysql.getPort()}/${mysql.getDatabase()}`;
+
   process.env.DATABASE_URL = connectionString;
 
-  new PrismaClient();
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: connectionString,
+      },
+    },
+  });
+
   await runMigrations();
   await runPrismaGenerate();
   await seedData();
