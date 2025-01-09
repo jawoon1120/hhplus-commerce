@@ -37,6 +37,22 @@ export class CouponService {
     return isseudCoupon;
   }
 
+  async getIssuedCouponByIdWithCoupon(
+    issuedCouponId: number,
+  ): Promise<IssuedCoupon> {
+    const issuedCounpon =
+      await this.issuedCouponRepository.getIssuedCouponByIdWithCoupon(
+        issuedCouponId,
+      );
+
+    return issuedCounpon;
+  }
+
+  async useIssuedCoupon(issuedCoupon: IssuedCoupon) {
+    issuedCoupon.useIssueCoupon();
+    return await this.issuedCouponRepository.updateIssuedCoupon(issuedCoupon);
+  }
+
   @Transactional()
   async issueCoupon(
     customerId: number,

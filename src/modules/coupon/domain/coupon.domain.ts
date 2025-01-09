@@ -26,4 +26,14 @@ export class Coupon {
   static create(coupon: Partial<Coupon>) {
     return new Coupon(coupon);
   }
+
+  calculateDiscountPrice(totalPrice: number): number {
+    let discountPrice = 0;
+    if (this.type === CouponType.PERCENT) {
+      discountPrice = (totalPrice * this.discountAmount) / 100;
+    } else {
+      discountPrice = this.discountAmount;
+    }
+    return discountPrice;
+  }
 }

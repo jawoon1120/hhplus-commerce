@@ -39,4 +39,30 @@ export class IssuedCouponRepository implements IIssuedCouponRepository {
     });
     return this.issuedCouponDataMapper.toDomain(createdIssuedCouponEntity);
   }
+
+  async getIssuedCouponByIdWithCoupon(
+    issuedCouponId: number,
+  ): Promise<IssuedCoupon> {
+    const issuedCouponEntity = await this.prisma.issuedCoupon.findUnique({
+      where: { id: issuedCouponId },
+      include: { coupon: true },
+    });
+
+    const issuedCoupon =
+      this.issuedCouponDataMapper.toDomain(issuedCouponEntity);
+    const coupon = this.couponDataMapper.toDomain(issuedCouponEntity.coupon);
+    issuedCoupon.coupon = coupon;
+
+    return issuedCoupon;
+  }
+
+  async updateIssuedCoupon(issuedCoupon: IssuedCoupon): Promise<IssuedCoupon> {
+    const issuedCouponEntity =
+      this.issuedCouponDataMapper.toEntity(issuedCoupon);
+    const updatedIssuedCouponEntity = await this.txHost.tx.issuedCoupon.update({
+      where: { id: issuedCoupon.id },
+      data: issuedCouponEntity,
+    });
+    return this.issuedCouponDataMapper.toDomain(updatedIssuedCouponEntity);
+  }
 }

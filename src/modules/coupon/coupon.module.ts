@@ -25,5 +25,6 @@ import { ICouponRepository } from './application/coupon-repository.interface';
     },
   ],
   imports: [PrismaModule],
+  exports: [CouponService, IssuedCouponDataMapper],
 })
 export class CouponModule {}

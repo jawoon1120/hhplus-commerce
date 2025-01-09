@@ -49,7 +49,7 @@ export class CouponController {
     return { issuedCouponId: issuedCoupon.id };
   }
 
-  @Get('/users/:userId')
+  @Get('/users/:customerId')
   @ApiOperation({
     summary: '사용자 보유 쿠폰 조회',
     description: '사용자가 보유한 쿠폰을 조회합니다.',
@@ -59,9 +59,9 @@ export class CouponController {
     type: [OwnedCouponQueryDto],
   })
   async getUserOwnedCoupons(
-    @Param('userId') userId: number,
+    @Param('customerId') customerId: number,
   ): Promise<OwnedCouponQueryDto[]> {
-    const ownedCoupons = await this.couponService.getOwnedCoupons(userId);
+    const ownedCoupons = await this.couponService.getOwnedCoupons(customerId);
     return ownedCoupons.map((ownedCoupon) =>
       OwnedCouponQueryDto.create(ownedCoupon),
     );

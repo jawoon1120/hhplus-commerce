@@ -27,4 +27,9 @@ export class IssuedCoupon {
   static create(issuedCoupon: Partial<IssuedCoupon>) {
     return new IssuedCoupon(issuedCoupon);
   }
+
+  useIssueCoupon() {
+    this.status = IssuedCouponStatus.USED;
+    this.expiredDate = new Date();
+  }
 }
