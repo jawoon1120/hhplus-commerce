@@ -7,7 +7,7 @@ export class CouponIssueRequestDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  customerId: number;
 
   @ApiProperty({
     description: '쿠폰 id',
@@ -15,4 +15,11 @@ export class CouponIssueRequestDto {
   @IsNumber()
   @IsNotEmpty()
   couponId: number;
+}
+
+export class CouponIssueResponseDto {
+  @ApiProperty({
+    description: '발급된 쿠폰 id',
+  })
+  issuedCouponId: number;
 }
