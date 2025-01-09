@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IBalanceRepository } from '../domain/balance-repository.interface';
+import { IBalanceRepository } from '../application/balance-repository.interface';
 import { BalanceDataMapper } from './balance.data-mapper';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { Balance as BalanceEntity } from '@prisma/client';

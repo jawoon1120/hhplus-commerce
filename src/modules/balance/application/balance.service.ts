@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IBalanceRepository } from '../domain/balance-repository.interface';
+import { IBalanceRepository } from './balance-repository.interface';
 import { Balance } from '../domain/balance.domain';
 
 @Injectable()

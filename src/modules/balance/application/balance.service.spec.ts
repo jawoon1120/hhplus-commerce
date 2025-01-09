@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BalanceService } from './balance.service';
-import { IBalanceRepository } from '../domain/balance-repository.interface';
+import { IBalanceRepository } from './balance-repository.interface';
 import { CustomerService } from '../../customer/application/customer.service';
 
 describe('BalanceService', () => {
