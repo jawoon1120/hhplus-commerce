@@ -8,7 +8,7 @@ model Order {
   deletedAt    DateTime?
   Customer     Customer      @relation(fields: [customerId], references: [id], map: "Order_buyerId_fkey")
   orderDetails OrderDetail[]
-  payments     Payment?
+  payment      Payment?
 
   @@index([customerId], map: "Order_buyerId_fkey")
 }

@@ -85,4 +85,48 @@ export class ProductRepository implements IProductRepository {
       this.productDataMapper.toDomain(product),
     );
   }
+
+  async findPopularProducts(days: number): Promise<Product[]> {
+    const daysAgo = new Date();
+    daysAgo.setDate(daysAgo.getDate() - days);
+
+    const products = await this.txHost.tx.product.findMany({
+      where: {
+        orderDetails: {
+          some: {
+            order: {
+              payment: {
+                status: 'COMPLETED',
+                createdAt: {
+                  gte: daysAgo,
+                },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        orderDetails: {
+          where: {
+            order: {
+              payment: {
+                status: 'COMPLETED',
+                createdAt: {
+                  gte: daysAgo,
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        orderDetails: {
+          _count: 'desc',
+        },
+      },
+      take: 5,
+    });
+
+    return products.map((product) => this.productDataMapper.toDomain(product));
+  }
 }

@@ -34,4 +34,8 @@ export class ProductService {
 
     return products;
   }
+
+  async getPopularProductsDuring3Days(): Promise<Product[]> {
+    return await this.productRepository.findPopularProducts(3);
+  }
 }
