@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IProductRepository } from '../domain/product-repository.interface';
 import { Product } from '../domain/product.domain';
 
@@ -16,12 +16,22 @@ export class ProductService {
     return await this.productRepository.findWithPaginationAndLock(page, limit);
   }
 
-  async consumeStock(id: number, consumeStockAmount: number): Promise<Product> {
-    if (consumeStockAmount <= 0) {
-      throw new BadRequestException(
-        'consumeStockAmount must be greater than 0',
+  async consumeStockList(
+    consumeStockList: { id: number; consumeStockAmount: number }[],
+  ): Promise<Product[]> {
+    const products = await this.productRepository.findByIdsWithLock(
+      consumeStockList.map((item) => item.id),
+    );
+
+    products.forEach((product) => {
+      product.consumeStock(
+        consumeStockList.find((item) => item.id === product.id)
+          ?.consumeStockAmount,
       );
-    }
-    return await this.productRepository.consumeStock(id, consumeStockAmount);
+    });
+
+    await this.productRepository.applyStockList(products);
+
+    return products;
   }
 }

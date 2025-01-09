@@ -16,4 +16,11 @@ export class Product {
   static create(product: Partial<Product>): Product {
     return new Product(product);
   }
+
+  consumeStock(consumeStockAmount: number): void {
+    if (this.stock < consumeStockAmount) {
+      throw new Error('재고가 부족합니다');
+    }
+    this.stock = this.stock - consumeStockAmount;
+  }
 }

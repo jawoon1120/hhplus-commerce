@@ -14,5 +14,6 @@ import { ProductDataMapper } from './infrastructure/product.data-mapper';
     { provide: IProductRepository, useClass: ProductRepository },
     ProductDataMapper,
   ],
+  exports: [ProductService],
 })
 export class ProductModule {}

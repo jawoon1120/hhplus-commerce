@@ -5,13 +5,17 @@ import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { ProductDataMapper } from './product.data-mapper';
 import { Product } from '../domain/product.domain';
 import { IProductRepository } from '../domain/product-repository.interface';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly productDataMapper: ProductDataMapper,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
+
   async findById(id: number): Promise<Product> {
     const product = await this.prisma.product.findUnique({
       where: { id },
@@ -50,45 +54,35 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findByIdsWithLock(ids: number[]): Promise<Product[]> {
-    const products = await this.prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        const _products: ProductEntity[] = await tx.$queryRaw<ProductEntity[]>`
+    const products: ProductEntity[] = await this.txHost.tx.$queryRaw<
+      ProductEntity[]
+    >`
           SELECT * FROM Product 
           WHERE id IN (${Prisma.join(ids)}) 
-          FOR SHARE
+          FOR UPDATE
         `;
 
-        return _products;
-      },
-    );
+    if (products.length === 0) {
+      throw new Error('Product not found');
+    }
 
     return products.map((product) => this.productDataMapper.toDomain(product));
   }
 
-  async consumeStock(id: number, consumeStockAmount: number): Promise<Product> {
-    const consumedStockProduct = await this.prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        const products = await tx.$queryRaw<ProductEntity[]>`
-        SELECT * FROM Product WHERE id = ${id} FOR UPDATE
-      `;
-
-        if (products.length === 0) {
-          throw new Error('Product not found');
-        }
-
-        const product = products[0];
-        if (product.stock < consumeStockAmount) {
-          throw new Error('재고가 부족합니다');
-        }
-
-        const updatedProduct = await tx.product.update({
-          where: { id },
-          data: { stock: { decrement: consumeStockAmount } },
-        });
-        return updatedProduct;
-      },
+  async applyStockList(products: Product[]): Promise<Product[]> {
+    const productEntities = products.map((product) =>
+      this.productDataMapper.toEntity(product),
     );
-
-    return this.productDataMapper.toDomain(consumedStockProduct);
+    await Promise.all(
+      productEntities.map(async (product) => {
+        await this.txHost.tx.product.update({
+          where: { id: product.id },
+          data: product,
+        });
+      }),
+    );
+    return productEntities.map((product) =>
+      this.productDataMapper.toDomain(product),
+    );
   }
 }
