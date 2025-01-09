@@ -4,7 +4,6 @@ import {
   Order as OrderEntity,
   OrderDetail as OrderDetailEntity,
 } from '@prisma/client';
-import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { Order } from '../domain/order.domain';
 import { OrderDataMapper } from './order.data-mapper';
 import { OrderDetailDataMapper } from './order-detail.data-mapper';
@@ -14,7 +13,6 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 @Injectable()
 export class OrderRepository implements IOrderRepository {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly orderDataMapper: OrderDataMapper,
     private readonly orderDetailDataMapper: OrderDetailDataMapper,
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
