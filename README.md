@@ -1,3 +1,13 @@
+### db migration
+
+```bash
+npm run migration:generate {migration_name} // 마이그레이션 파일 생성
+npm run migration:run // 마이그레이션 실행
+npm run migration:seed // 시드 실행
+npm run schema:generate // 스키마 생성
+```
+
+
 ### Use Case
 
 ![](./images/use-case-v2.png)

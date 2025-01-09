@@ -1,0 +1,16 @@
+model IssuedCoupon {
+  id          Int       @id @default(autoincrement())
+  customerId  Int
+  couponId    Int
+  expiredDate DateTime?
+  status      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  Customer    Customer  @relation(fields: [customerId], references: [id], map: "IssuedCoupon_buyerId_fkey")
+  coupon      Coupon    @relation(fields: [couponId], references: [id])
+  payment     Payment?
+
+  @@index([customerId], map: "IssuedCoupon_buyerId_fkey")
+  @@index([couponId], map: "IssuedCoupon_couponId_fkey")
+}

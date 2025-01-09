@@ -8,7 +8,13 @@ import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { ConfigModule } from '@nestjs/config';
 import { AppConfigService } from './configs/configs.service';
-import { DatabaseModule } from './infrastructure/database/database.module';
+import { PrismaModule } from './infrastructure/database/prisma.module';
+import { CustomerModule } from './modules/customer/customer.module';
+import { ClsModule } from 'nestjs-cls';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { PrismaService } from './infrastructure/database/prisma.service';
+import { PgModule } from './pg/pg.module';
 
 const serviceModules = [
   CouponModule,
@@ -21,7 +27,25 @@ const serviceModules = [
   imports: [
     ...serviceModules,
     ConfigModule.forRoot(AppConfigService.getEnvConfigs()),
-    DatabaseModule,
+    PrismaModule,
+    CustomerModule,
+    ClsModule.forRoot({
+      plugins: [
+        new ClsPluginTransactional({
+          imports: [
+            // module in which the PrismaClient is provided
+            PrismaModule,
+          ],
+          adapter: new TransactionalAdapterPrisma({
+            // the injection token of the PrismaClient
+            prismaInjectionToken: PrismaService,
+          }),
+        }),
+      ],
+      global: true,
+      middleware: { mount: true },
+    }),
+    PgModule,
   ],
   controllers: [AppController],
   providers: [AppService],

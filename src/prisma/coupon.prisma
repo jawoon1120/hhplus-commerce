@@ -1,0 +1,14 @@
+model Coupon {
+  id                Int            @id @default(autoincrement())
+  name              String
+  type              String
+  discountAmount    Int
+  startDate         DateTime
+  endDate           DateTime
+  totalQuantity     Int
+  remainingQuantity Int
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+  issuedCoupons     IssuedCoupon[]
+}

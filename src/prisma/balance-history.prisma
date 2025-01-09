@@ -1,0 +1,12 @@
+model BalanceHistory {
+  id        Int       @id @default(autoincrement())
+  balanceId Int
+  type      String
+  amount    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  balance   Balance   @relation(fields: [balanceId], references: [id])
+
+  @@index([balanceId], map: "BalanceHistory_balanceId_fkey")
+}
