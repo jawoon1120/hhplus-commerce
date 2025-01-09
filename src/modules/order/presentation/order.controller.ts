@@ -4,9 +4,12 @@ import {
   OrderCreateResponseDto,
 } from './dto/order-create.dto';
 import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { OrderService } from '../application/order.service';
 
 @Controller('order')
 export class OrderController {
+  constructor(private readonly orderService: OrderService) {}
+
   @Post()
   @ApiOperation({ summary: '주문 생성' })
   @ApiCreatedResponse({
