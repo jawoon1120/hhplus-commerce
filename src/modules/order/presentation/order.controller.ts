@@ -4,11 +4,12 @@ import {
   OrderCreateResponseDto,
 } from './dto/order-create.dto';
 import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
-import { OrderService } from '../application/order.service';
+
+import { OrderFacade } from '../application/order.facade';
 
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderFacade: OrderFacade) {}
 
   @Post()
   @ApiOperation({ summary: '주문 생성' })
@@ -16,10 +17,14 @@ export class OrderController {
     description: '주문 생성 성공',
     type: OrderCreateResponseDto,
   })
-  createOrder(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async placeOrder(
     @Body() orderCreateDto: OrderCreateRequestDto,
-  ): OrderCreateResponseDto {
-    return { orderId: 1 };
+  ): Promise<OrderCreateResponseDto> {
+    const order = await this.orderFacade.createOrder(orderCreateDto);
+    return {
+      orderId: order.id,
+      totalPrice: order.totalPrice,
+      orderDetails: order.orderDetails,
+    };
   }
 }

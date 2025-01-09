@@ -24,7 +24,24 @@ export class OrderCreateRequestDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  customerId: number;
+}
+
+export class OrderDetailDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  productId: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  quantity: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  totalPrice: number;
 }
 
 export class OrderCreateResponseDto {
@@ -32,4 +49,14 @@ export class OrderCreateResponseDto {
   @IsNumber()
   @IsNotEmpty()
   orderId: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  totalPrice: number;
+
+  @ApiProperty()
+  @IsArray()
+  @IsNotEmpty()
+  orderDetails: OrderDetailDto[];
 }
