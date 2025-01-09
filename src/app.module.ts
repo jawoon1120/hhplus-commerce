@@ -14,6 +14,7 @@ import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaService } from './infrastructure/database/prisma.service';
+import { PgModule } from './pg/pg.module';
 
 const serviceModules = [
   CouponModule,
@@ -44,6 +45,7 @@ const serviceModules = [
       global: true,
       middleware: { mount: true },
     }),
+    PgModule,
   ],
   controllers: [AppController],
   providers: [AppService],
