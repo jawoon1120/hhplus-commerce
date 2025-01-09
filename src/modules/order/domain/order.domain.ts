@@ -3,8 +3,8 @@ import { OrderDetail } from './order-detail.domain';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
+  CANCELED = 'CANCELED',
   PAID = 'PAID',
-  CANCELLED = 'CANCELLED',
 }
 
 export class Order {

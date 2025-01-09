@@ -22,5 +22,6 @@ import { IOrderRepository } from './application/order-repository.interface';
       useClass: OrderRepository,
     },
   ],
+  exports: [OrderService],
 })
 export class OrderModule {}

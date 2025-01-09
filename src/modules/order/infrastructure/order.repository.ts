@@ -42,4 +42,22 @@ export class OrderRepository implements IOrderRepository {
     createdOrder.orderDetails = createdOrderDetails;
     return createdOrder;
   }
+
+  async findById(orderId: number): Promise<Order> {
+    const orderEntity: OrderEntity = await this.txHost.tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        orderDetails: true,
+      },
+    });
+    return this.orderDataMapper.toDomain(orderEntity);
+  }
+  async update(order: Order): Promise<Order> {
+    const orderEntity: OrderEntity = this.orderDataMapper.toEntity(order);
+    const updatedOrderEntity = await this.txHost.tx.order.update({
+      where: { id: order.id },
+      data: orderEntity,
+    });
+    return this.orderDataMapper.toDomain(updatedOrderEntity);
+  }
 }

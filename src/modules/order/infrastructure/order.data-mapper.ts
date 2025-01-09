@@ -28,7 +28,7 @@ export class OrderDataMapper extends DataMapper<Order, OrderEntity> {
     return {
       id: order.id,
       customerId: order.customerId,
-      status: order.status as OrderStatus,
+      status: order.status,
       totalPrice: order.totalPrice,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,

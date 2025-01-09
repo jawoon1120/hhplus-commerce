@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { OrderCreateRequestDto } from '../presentation/dto/order-create.dto';
 import { Product } from '../../product/domain/product.domain';
@@ -33,5 +33,18 @@ export class OrderService {
       0,
     );
     return await this.orderRepository.create(order);
+  }
+
+  async getOrderById(orderId: number): Promise<Order> {
+    const order = await this.orderRepository.findById(orderId);
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    return order;
+  }
+
+  async updateOrderStatus(order: Order, status: OrderStatus): Promise<Order> {
+    order.status = status;
+    return await this.orderRepository.update(order);
   }
 }
