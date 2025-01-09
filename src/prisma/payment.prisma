@@ -1,14 +1,14 @@
 model Payment {
-  id              Int          @id @default(autoincrement())
-  orderId         Int          @unique
-  issuedCouponId  Int          @unique
+  id              Int           @id @default(autoincrement())
+  orderId         Int           @unique
+  issuedCouponId  Int?          @unique
   status          String
-  originPrice     String
-  discountedPrice String
-  finalPrice      String
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  originPrice     Int
+  discountedPrice Int?
+  finalPrice      Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   deletedAt       DateTime?
-  issuedCoupon    IssuedCoupon @relation(fields: [issuedCouponId], references: [id])
-  order           Order        @relation(fields: [orderId], references: [id])
+  issuedCoupon    IssuedCoupon? @relation(fields: [issuedCouponId], references: [id], onDelete: Restrict)
+  order           Order         @relation(fields: [orderId], references: [id])
 }
