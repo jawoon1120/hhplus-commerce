@@ -6,14 +6,17 @@ import {
 import { IBalanceRepository } from '../domain/balance-repository.interface';
 import { BalanceDataMapper } from './balance.data-mapper';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
-import { Balance as BalanceEntity, Prisma } from '@prisma/client';
+import { Balance as BalanceEntity } from '@prisma/client';
 import { Balance } from '../domain/balance.domain';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 
 @Injectable()
 export class BalanceRepository implements IBalanceRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly balanceDataMapper: BalanceDataMapper,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
   async getBalanceByUserId(customerId: number): Promise<Balance> {
@@ -24,56 +27,36 @@ export class BalanceRepository implements IBalanceRepository {
     return this.balanceDataMapper.toDomain(balance);
   }
 
-  async _getBalanceByUserIdWithLock(
-    tx: Prisma.TransactionClient,
-    customerId: number,
-  ): Promise<BalanceEntity | undefined> {
-    const balances: BalanceEntity[] = await tx.$queryRaw<
+  async getBalanceByUserIdWithLock(customerId: number): Promise<Balance> {
+    const balances: BalanceEntity[] = await this.txHost.tx.$queryRaw<
       BalanceEntity[]
     >`SELECT * FROM Balance WHERE customerId = ${customerId} FOR UPDATE`;
-
-    return balances[0];
+    const balance = balances[0];
+    if (!balance) {
+      throw new NotFoundException('Balance not found');
+    }
+    return this.balanceDataMapper.toDomain(balance);
   }
 
   async withdrawBalance(customerId: number, amount: number): Promise<Balance> {
-    const savedBalance = await this.prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        const balance = await this._getBalanceByUserIdWithLock(tx, customerId);
+    const balance = await this.getBalanceByUserIdWithLock(customerId);
+    if (balance.amount < amount) {
+      throw new BadRequestException('Insufficient balance');
+    }
+    const updatedBalance = await this.txHost.tx.balance.update({
+      where: { customerId: customerId },
+      data: { amount: { decrement: amount } },
+    });
 
-        if (!balance) {
-          throw new NotFoundException('Balance not found');
-        }
-
-        if (balance.amount < amount) {
-          throw new BadRequestException('Insufficient balance');
-        }
-        console.log(['[WITHDRAW]'], balance.amount, amount);
-        const updatedBalance = await tx.balance.update({
-          where: { customerId: customerId },
-          data: { amount: { decrement: amount } },
-        });
-
-        return updatedBalance;
-      },
-    );
-
-    return this.balanceDataMapper.toDomain(savedBalance);
+    return this.balanceDataMapper.toDomain(updatedBalance);
   }
 
   async chargeBalance(customerId: number, amount: number): Promise<Balance> {
-    const savedBalance = await this.prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        await this._getBalanceByUserIdWithLock(tx, customerId);
+    const updatedBalance = await this.txHost.tx.balance.update({
+      where: { customerId: customerId },
+      data: { amount: { increment: amount } },
+    });
 
-        const updatedBalance = await tx.balance.update({
-          where: { customerId: customerId },
-          data: { amount: { increment: amount } },
-        });
-
-        return updatedBalance;
-      },
-    );
-
-    return this.balanceDataMapper.toDomain(savedBalance);
+    return this.balanceDataMapper.toDomain(updatedBalance);
   }
 }

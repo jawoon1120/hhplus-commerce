@@ -6,6 +6,7 @@ import { PrismaModule } from '../../infrastructure/database/prisma.module';
 import { IBalanceRepository } from './domain/balance-repository.interface';
 import { BalanceRepository } from './infrastructure/balance.repository';
 import { CustomerModule } from '../customer/customer.module';
+import { BalanceFacade } from './application/balance.facade';
 
 @Module({
   imports: [PrismaModule, CustomerModule],
@@ -17,6 +18,8 @@ import { CustomerModule } from '../customer/customer.module';
       provide: IBalanceRepository,
       useClass: BalanceRepository,
     },
+    BalanceFacade,
   ],
+  exports: [BalanceService],
 })
 export class BalanceModule {}

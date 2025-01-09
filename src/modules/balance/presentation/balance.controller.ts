@@ -6,12 +6,12 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { QueryBalanceResponseDto } from './dto/balance-query.dto';
-import { BalanceService } from '../application/balance.service';
 import { Balance } from '../domain/balance.domain';
+import { BalanceFacade } from '../application/balance.facade';
 
 @Controller('/users/:customerId/balances')
 export class BalanceController {
-  constructor(private readonly balanceService: BalanceService) {}
+  constructor(private readonly balanceFacade: BalanceFacade) {}
 
   // 잔책 충전 API 엔드포인트
   @Post()
@@ -26,7 +26,7 @@ export class BalanceController {
     @Body() chargeDto: ChargeBalanceRequestDto,
     @Param('customerId') customerId: number,
   ): Promise<QueryBalanceResponseDto> {
-    const balance = await this.balanceService.chargeBalance(
+    const balance = await this.balanceFacade.chargeBalance(
       customerId,
       chargeDto.amount,
     );
@@ -50,7 +50,7 @@ export class BalanceController {
   async checkBalance(
     @Param('customerId') customerId: number,
   ): Promise<QueryBalanceResponseDto> {
-    const balance: Balance = await this.balanceService.getBalance(customerId);
+    const balance: Balance = await this.balanceFacade.getBalance(customerId);
     return {
       amount: balance.amount,
       customerId: balance.customerId,
