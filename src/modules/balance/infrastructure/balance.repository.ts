@@ -47,6 +47,13 @@ export class BalanceRepository implements IBalanceRepository {
       where: { customerId: customerId },
       data: { amount: { decrement: amount } },
     });
+    await this.txHost.tx.balanceHistory.create({
+      data: {
+        balanceId: updatedBalance.id,
+        amount: amount.toString(),
+        type: 'WITHDRAW',
+      },
+    });
 
     return this.balanceDataMapper.toDomain(updatedBalance);
   }
@@ -55,6 +62,14 @@ export class BalanceRepository implements IBalanceRepository {
     const updatedBalance = await this.txHost.tx.balance.update({
       where: { customerId: customerId },
       data: { amount: { increment: amount } },
+    });
+
+    await this.txHost.tx.balanceHistory.create({
+      data: {
+        balanceId: updatedBalance.id,
+        amount: amount.toString(),
+        type: 'CHARGE',
+      },
     });
 
     return this.balanceDataMapper.toDomain(updatedBalance);
