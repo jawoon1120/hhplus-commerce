@@ -2,6 +2,7 @@ model OrderDetail {
   id         Int       @id @default(autoincrement())
   orderId    Int
   productId  Int
+  quantity   Int
   totalPrice Int
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
