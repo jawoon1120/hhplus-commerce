@@ -1,3 +1,5 @@
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
+
 export class Product {
   id: number;
   name: string;
@@ -19,7 +21,7 @@ export class Product {
 
   consumeStock(consumeStockAmount: number): void {
     if (this.stock < consumeStockAmount) {
-      throw new Error('재고가 부족합니다');
+      throw new BadRequestException('재고가 부족합니다');
     }
     this.stock = this.stock - consumeStockAmount;
   }

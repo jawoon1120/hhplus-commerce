@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Coupon } from '../domain/coupon.domain';
 import { ICouponRepository } from './coupon-repository.interface';
 import { IIssuedCouponRepository } from './issued-coupon-repository.interface';
@@ -12,6 +7,8 @@ import {
   IssuedCouponStatus,
 } from '../domain/issued-coupon.domain';
 import { Transactional } from '@nestjs-cls/transactional';
+import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 
 @Injectable()
 export class CouponService {

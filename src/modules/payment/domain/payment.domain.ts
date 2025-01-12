@@ -1,3 +1,5 @@
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
+
 export enum PaymentStatus {
   PAID = 'PAID', //만들 때 이거
   CANCELED = 'CANCELED', //TODO
@@ -30,7 +32,9 @@ export class Payment {
   applyDiscount(issuedCouponId: number, discountPrice: number) {
     this.issuedCouponId = issuedCouponId;
     if (discountPrice > this.originPrice) {
-      throw new Error('Discount price is greater than origin price');
+      throw new BadRequestException(
+        'Discount price is greater than origin price',
+      );
     }
     this.discountedPrice = discountPrice;
     this.finalPrice = this.originPrice - this.discountedPrice;

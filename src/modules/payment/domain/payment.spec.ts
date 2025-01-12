@@ -1,6 +1,7 @@
 import { Payment, PaymentStatus } from './payment.domain';
 import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
 import { Coupon } from '../../coupon/domain/coupon.domain';
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 
 describe('Payment', () => {
   describe('create', () => {
@@ -41,19 +42,20 @@ describe('Payment', () => {
         finalPrice: 10000,
       });
 
-      const coupon = {
-        id: 1,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        calculateDiscountPrice: (price: number) => 1000,
-      } as Coupon;
-
       const issuedCoupon = {
         id: 1,
-        coupon,
+        coupon: {
+          id: 1,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          calculateDiscountPrice: (price: number) => 1000,
+        },
       } as IssuedCoupon;
 
       // when
-      payment.applyDiscount(issuedCoupon);
+      payment.applyDiscount(
+        issuedCoupon.id,
+        issuedCoupon.coupon.calculateDiscountPrice(10000),
+      );
 
       // then
       expect(payment.issuedCouponId).toBe(issuedCoupon.id);
@@ -84,9 +86,12 @@ describe('Payment', () => {
       } as IssuedCoupon;
 
       // when & then
-      expect(() => payment.applyDiscount(issuedCoupon)).toThrow(
-        'Discount price is greater than origin price',
-      );
+      expect(() =>
+        payment.applyDiscount(
+          issuedCoupon.id,
+          issuedCoupon.coupon.calculateDiscountPrice(10000),
+        ),
+      ).toThrow(BadRequestException);
     });
   });
 });

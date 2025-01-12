@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrderService } from './order.service';
 import { IOrderRepository } from './order-repository.interface';
 import { Order } from '../domain/order.domain';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 
 describe('OrderService', () => {
   let orderService: OrderService;

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CouponService } from '../../coupon/application/coupon.service';
 import { CustomerService } from '../../customer/application/customer.service';
 import { OrderService } from '../../order/application/order.service';
@@ -8,6 +8,7 @@ import { PaymentService } from './payment.service';
 import { PaymentStatus } from '../domain/payment.domain';
 import { PgService } from '../../../pg/pg.service';
 import { OrderStatus } from '../../order/domain/order.domain';
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 
 @Injectable()
 export class PaymentFacade {

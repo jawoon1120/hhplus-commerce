@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 import { Coupon } from './coupon.domain';
 
 export enum IssuedCouponStatus {

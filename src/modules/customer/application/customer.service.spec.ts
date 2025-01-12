@@ -3,7 +3,7 @@ import { CustomerService } from './customer.service';
 
 import { ICustomerRepository } from './customer-repository.interface';
 import { Customer } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 
 describe('OrderService', () => {
   let service: CustomerService;

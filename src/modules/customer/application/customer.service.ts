@@ -1,6 +1,7 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ICustomerRepository } from './customer-repository.interface';
 import { Customer } from '@prisma/client';
+import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 
 @Injectable()
 export class CustomerService {

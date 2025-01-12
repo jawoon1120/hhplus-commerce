@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CouponService } from './coupon.service';
 import { ICouponRepository } from './coupon-repository.interface';
 import { IIssuedCouponRepository } from './issued-coupon-repository.interface';
-import { NotFoundException } from '@nestjs/common';
 import { Coupon, CouponType } from '../domain/coupon.domain';
 import {
   IssuedCoupon,
@@ -10,6 +9,7 @@ import {
 } from '../domain/issued-coupon.domain';
 import { ClsModule } from 'nestjs-cls';
 import { TransactionHost } from '@nestjs-cls/transactional';
+import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 
 describe('CouponService', () => {
   let service: CouponService;
