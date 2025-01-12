@@ -2,8 +2,8 @@ import { Balance } from '../domain/balance.domain';
 
 export interface IBalanceRepository {
   getBalanceByUserId(customerId: number): Promise<Balance>;
-  chargeBalance(customerId: number, amount: number): Promise<Balance>;
-  withdrawBalance(customerId: number, amount: number): Promise<Balance>;
+  chargeBalance(balance: Balance): Promise<Balance>;
+  withdrawBalance(balance: Balance): Promise<Balance>;
   getBalanceByUserIdWithLock(customerId: number): Promise<Balance>;
 }
 

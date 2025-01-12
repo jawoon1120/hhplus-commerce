@@ -62,10 +62,6 @@ export class ProductRepository implements IProductRepository {
           FOR UPDATE
         `;
 
-    if (products.length === 0) {
-      throw new Error('Product not found');
-    }
-
     return products.map((product) => this.productDataMapper.toDomain(product));
   }
 

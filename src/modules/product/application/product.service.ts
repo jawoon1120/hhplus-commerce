@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IProductRepository } from '../domain/product-repository.interface';
 import { Product } from '../domain/product.domain';
+import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 
 @Injectable()
 export class ProductService {
@@ -22,6 +23,10 @@ export class ProductService {
     const products = await this.productRepository.findByIdsWithLock(
       consumeStockList.map((item) => item.id),
     );
+
+    if (products.length === 0) {
+      throw new NotFoundException('Product not found');
+    }
 
     products.forEach((product) => {
       product.consumeStock(

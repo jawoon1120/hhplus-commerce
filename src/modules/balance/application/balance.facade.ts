@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Balance } from '../domain/balance.domain';
 import { CustomerService } from '../../customer/application/customer.service';
 import { BalanceService } from './balance.service';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class BalanceFacade {
@@ -20,6 +21,7 @@ export class BalanceFacade {
   }
 
   //TODO: customer 여부 판단은 추후 guard로 처리
+  @Transactional()
   async chargeBalance(customerId: number, amount: number): Promise<Balance> {
     await this.customerService.getCustomerById(customerId);
 
@@ -27,6 +29,7 @@ export class BalanceFacade {
   }
 
   //TODO: customer 여부 판단은 추후 guard로 처리
+  @Transactional()
   async withdrawBalance(customerId: number, amount: number): Promise<Balance> {
     await this.customerService.getCustomerById(customerId);
 

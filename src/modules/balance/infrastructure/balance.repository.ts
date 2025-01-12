@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IBalanceRepository } from '../application/balance-repository.interface';
 import { BalanceDataMapper } from './balance.data-mapper';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
@@ -32,25 +28,20 @@ export class BalanceRepository implements IBalanceRepository {
       BalanceEntity[]
     >`SELECT * FROM Balance WHERE customerId = ${customerId} FOR UPDATE`;
     const balance = balances[0];
-    if (!balance) {
-      throw new NotFoundException('Balance not found');
-    }
+
     return this.balanceDataMapper.toDomain(balance);
   }
 
-  async withdrawBalance(customerId: number, amount: number): Promise<Balance> {
-    const balance = await this.getBalanceByUserIdWithLock(customerId);
-    if (balance.amount < amount) {
-      throw new BadRequestException('Insufficient balance');
-    }
+  async withdrawBalance(balance: Balance): Promise<Balance> {
     const updatedBalance = await this.txHost.tx.balance.update({
-      where: { customerId: customerId },
-      data: { amount: { decrement: amount } },
+      where: { id: balance.id },
+      data: { amount: { decrement: balance.amount } },
     });
+
     await this.txHost.tx.balanceHistory.create({
       data: {
         balanceId: updatedBalance.id,
-        amount: amount.toString(),
+        amount: balance.amount.toString(),
         type: 'WITHDRAW',
       },
     });
@@ -58,16 +49,16 @@ export class BalanceRepository implements IBalanceRepository {
     return this.balanceDataMapper.toDomain(updatedBalance);
   }
 
-  async chargeBalance(customerId: number, amount: number): Promise<Balance> {
+  async chargeBalance(balance: Balance): Promise<Balance> {
     const updatedBalance = await this.txHost.tx.balance.update({
-      where: { customerId: customerId },
-      data: { amount: { increment: amount } },
+      where: { id: balance.id },
+      data: { amount: { increment: balance.amount } },
     });
 
     await this.txHost.tx.balanceHistory.create({
       data: {
         balanceId: updatedBalance.id,
-        amount: amount.toString(),
+        amount: balance.amount.toString(),
         type: 'CHARGE',
       },
     });
