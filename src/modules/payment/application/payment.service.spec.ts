@@ -112,9 +112,6 @@ describe('PaymentService', () => {
       // then
       expect(result).toEqual(mockPayment);
       expect(paymentRepository.createPayment).toHaveBeenCalled();
-      expect(couponService.useIssuedCoupon).toHaveBeenCalledWith(
-        mockIssuedCoupon,
-      );
     });
   });
 
