@@ -8,7 +8,6 @@ import { PaymentService } from './payment.service';
 import { PaymentStatus } from '../domain/payment.domain';
 import { PgService } from '../../../pg/pg.service';
 import { OrderStatus } from '../../order/domain/order.domain';
-import { IssuedCouponStatus } from '../../coupon/domain/issued-coupon.domain';
 
 @Injectable()
 export class PaymentFacade {
@@ -41,9 +40,7 @@ export class PaymentFacade {
 
     const issuedCoupon =
       await this.couponService.getIssuedCouponByIdWithCoupon(issuedCouponId);
-    if (issuedCoupon.status === IssuedCouponStatus.USED) {
-      throw new BadRequestException('Coupon is already used');
-    }
+    await this.couponService.useIssuedCoupon(issuedCoupon);
 
     try {
       await this.balanceService.withdrawBalance(customerId, order.totalPrice);

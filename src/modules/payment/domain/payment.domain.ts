@@ -1,5 +1,3 @@
-import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
-
 export enum PaymentStatus {
   PAID = 'PAID', //만들 때 이거
   CANCELED = 'CANCELED', //TODO
@@ -29,11 +27,8 @@ export class Payment {
     return new Payment(payment);
   }
 
-  applyDiscount(issuedCoupon: IssuedCoupon) {
-    this.issuedCouponId = issuedCoupon.id;
-    const discountPrice = issuedCoupon.coupon.calculateDiscountPrice(
-      this.originPrice,
-    );
+  applyDiscount(issuedCouponId: number, discountPrice: number) {
+    this.issuedCouponId = issuedCouponId;
     if (discountPrice > this.originPrice) {
       throw new Error('Discount price is greater than origin price');
     }
