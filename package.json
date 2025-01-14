@@ -40,10 +40,12 @@
     "class-validator": "^0.14.1",
     "joi": "^17.13.3",
     "mysql2": "^3.12.0",
+    "nest-winston": "^1.9.7",
     "nestjs-cls": "^4.5.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "testcontainers": "^10.16.0"
+    "testcontainers": "^10.16.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
