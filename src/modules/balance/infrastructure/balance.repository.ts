@@ -35,7 +35,7 @@ export class BalanceRepository implements IBalanceRepository {
   async withdrawBalance(balance: Balance): Promise<Balance> {
     const updatedBalance = await this.txHost.tx.balance.update({
       where: { id: balance.id },
-      data: { amount: { decrement: balance.amount } },
+      data: { amount: balance.amount },
     });
 
     await this.txHost.tx.balanceHistory.create({
@@ -52,9 +52,9 @@ export class BalanceRepository implements IBalanceRepository {
   async chargeBalance(balance: Balance): Promise<Balance> {
     const updatedBalance = await this.txHost.tx.balance.update({
       where: { id: balance.id },
-      data: { amount: { increment: balance.amount } },
+      data: { amount: balance.amount },
     });
-
+    console.log('[UPDATED BALANCE]', updatedBalance);
     await this.txHost.tx.balanceHistory.create({
       data: {
         balanceId: updatedBalance.id,
