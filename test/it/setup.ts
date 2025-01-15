@@ -1,6 +1,7 @@
 import { MySqlContainer } from '@testcontainers/mysql';
 import { PrismaClient } from '@prisma/client';
 import { execSync } from 'node:child_process';
+import { runPrismaDbPush } from './util/db-push';
 
 const init = async () => {
   await Promise.all([initMysql()]);
@@ -10,7 +11,7 @@ let connectionString: string;
 const initMysql = async () => {
   //TODO: .env.test랑 연결
   const mysql = await new MySqlContainer('mysql:8')
-    .withDatabase('dbname')
+    .withDatabase('hhpluscommerce')
     .withUser('root')
     .withRootPassword('pw')
     .start();
@@ -30,7 +31,7 @@ const initMysql = async () => {
 
   await runMigrations();
   await runPrismaGenerate();
-  await seedData();
+  await runPrismaDbPush();
 };
 
 const runMigrations = async () => {
@@ -50,16 +51,6 @@ const runPrismaGenerate = async () => {
     console.log('Generate applied successfully.');
   } catch (error) {
     console.error('Error generating prisma:', error);
-  }
-};
-
-const seedData = async () => {
-  try {
-    const deployOutput = execSync('npm run test:seed').toString();
-    console.log(deployOutput);
-    console.log('Seeding applied successfully.');
-  } catch (error) {
-    console.error('Error seeding data:', error);
   }
 };
 
