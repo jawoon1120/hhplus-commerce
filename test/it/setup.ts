@@ -2,6 +2,7 @@ import { MySqlContainer } from '@testcontainers/mysql';
 import { PrismaClient } from '@prisma/client';
 import { execSync } from 'node:child_process';
 import { runPrismaDbPush } from './util/db-push';
+import { seedAll } from './util/seed';
 
 const init = async () => {
   await Promise.all([initMysql()]);
@@ -29,9 +30,12 @@ const initMysql = async () => {
     },
   });
 
+  const prisma = new PrismaClient();
+
   await runMigrations();
   await runPrismaGenerate();
   await runPrismaDbPush();
+  await seedAll(prisma);
 };
 
 const runMigrations = async () => {
