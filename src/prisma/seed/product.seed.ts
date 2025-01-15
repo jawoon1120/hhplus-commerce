@@ -6,15 +6,15 @@ export const seedProduct = async (prisma: PrismaClient) => {
       {
         id: 1,
         name: 'T셔츠',
-        price: 10000,
+        price: 1000,
         sellerId: 100,
         totalQuantity: 10,
-        stock: 10,
+        stock: 15,
       },
       {
         id: 2,
         name: '바지',
-        price: 30000,
+        price: 3000,
         sellerId: 101,
         totalQuantity: 10,
         stock: 10,
@@ -22,7 +22,7 @@ export const seedProduct = async (prisma: PrismaClient) => {
       {
         id: 3,
         name: '신발',
-        price: 100000,
+        price: 10000,
         sellerId: 102,
         totalQuantity: 10,
         stock: 10,

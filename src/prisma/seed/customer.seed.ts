@@ -6,6 +6,7 @@ export const seedCustomer = async (prisma: PrismaClient) => {
       { id: 1, name: '김항해' },
       { id: 2, name: '박항해' },
       { id: 3, name: '이항해' },
+      { id: 4, name: '최항해' },
     ],
     skipDuplicates: true,
   });
