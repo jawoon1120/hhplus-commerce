@@ -1,3 +1,5 @@
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
+
 export class Balance {
   id: number;
   customerId: number;
@@ -20,16 +22,14 @@ export class Balance {
     return this.amount;
   }
 
-  //TODO: 아래 로직들 transaction 데코레이터 구현하고 사용할 수 있도록 해야함
-  //      현재는 repository에서 묶여서 구현되어 있음
-  // chargeBalance(amount: number): void {
-  //   this.amount += amount;
-  // }
+  chargeBalance(amount: number): void {
+    this.amount += amount;
+  }
 
-  // withdrawBalance(amount: number): void {
-  //   if (this.amount - amount < 0) {
-  //     throw new BadRequestException('Balance is not enough');
-  //   }
-  //   this.amount -= amount;
-  // }
+  withdrawBalance(amount: number): void {
+    if (this.amount - amount < 0) {
+      throw new BadRequestException('not enough balance to withdraw');
+    }
+    this.amount -= amount;
+  }
 }

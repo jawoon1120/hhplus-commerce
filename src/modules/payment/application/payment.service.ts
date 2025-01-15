@@ -1,10 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Payment, PaymentStatus } from '../domain/payment.domain';
 
-import { IPaymentRepository } from './payment-repository.interface';
+import { IPaymentRepository } from '../application/payment-repository.interface';
 import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
-
-import { CouponService } from '../../coupon/application/coupon.service';
 import { Order } from '../../order/domain/order.domain';
 
 @Injectable()
@@ -12,7 +10,6 @@ export class PaymentService {
   constructor(
     @Inject(IPaymentRepository)
     private readonly paymentRepository: IPaymentRepository,
-    private readonly couponService: CouponService,
   ) {}
 
   async createPayment(
@@ -27,8 +24,10 @@ export class PaymentService {
     });
 
     if (issuedCoupon) {
-      payment.applyDiscount(issuedCoupon);
-      await this.couponService.useIssuedCoupon(issuedCoupon);
+      const discountPrice = issuedCoupon?.coupon.calculateDiscountPrice(
+        order.totalPrice,
+      );
+      payment.applyDiscount(issuedCoupon.id, discountPrice);
     }
 
     return await this.paymentRepository.createPayment(payment);

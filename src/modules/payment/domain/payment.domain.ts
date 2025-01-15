@@ -1,4 +1,4 @@
-import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
+import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 
 export enum PaymentStatus {
   PAID = 'PAID', //만들 때 이거
@@ -29,13 +29,12 @@ export class Payment {
     return new Payment(payment);
   }
 
-  applyDiscount(issuedCoupon: IssuedCoupon) {
-    this.issuedCouponId = issuedCoupon.id;
-    const discountPrice = issuedCoupon.coupon.calculateDiscountPrice(
-      this.originPrice,
-    );
+  applyDiscount(issuedCouponId: number, discountPrice: number) {
+    this.issuedCouponId = issuedCouponId;
     if (discountPrice > this.originPrice) {
-      throw new Error('Discount price is greater than origin price');
+      throw new BadRequestException(
+        'Discount price is greater than origin price',
+      );
     }
     this.discountedPrice = discountPrice;
     this.finalPrice = this.originPrice - this.discountedPrice;
