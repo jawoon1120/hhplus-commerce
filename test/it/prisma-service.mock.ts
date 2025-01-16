@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class MockPrismaService
+export class PrismaMockService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
@@ -13,7 +13,6 @@ export class MockPrismaService
           url: process.env.DATABASE_URL,
         },
       },
-      log: ['query', 'info', 'warn', 'error'],
     });
   }
 

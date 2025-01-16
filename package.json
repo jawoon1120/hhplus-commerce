@@ -25,7 +25,8 @@
     "test:it": "dotenv -e .env.test -- jest --config ./test/it/it.jest.json",
     "test:seed": "dotenv -e .env.test -- prisma db seed",
     "test:migrate": "dotenv -e .env.test -- prisma migrate deploy",
-    "test:generate": "dotenv -e .env.test -- prisma generate"
+    "test:generate": "dotenv -e .env.test -- prisma generate",
+    "test:db-push": "dotenv -e .env.test -- prisma db push"
   },
   "dependencies": {
     "@nestjs-cls/transactional-adapter-prisma": "^1.2.7",
