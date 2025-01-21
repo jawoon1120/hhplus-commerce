@@ -9,6 +9,7 @@ import { PaymentStatus } from '../domain/payment.domain';
 import { PgService } from '../../../pg/pg.service';
 import { OrderStatus } from '../../order/domain/order.domain';
 import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
+import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
 
 @Injectable()
 export class PaymentFacade {
@@ -31,7 +32,7 @@ export class PaymentFacade {
   async makePayment(
     orderId: number,
     customerId: number,
-    issuedCouponId: number | null,
+    issuedCouponId?: number,
   ) {
     const customer = await this.customerService.getCustomerById(customerId);
     const order = await this.orderService.getOrderById(orderId);
@@ -39,9 +40,12 @@ export class PaymentFacade {
       throw new BadRequestException('Customer and order do not match');
     }
 
-    const issuedCoupon =
-      await this.couponService.getIssuedCouponByIdWithCoupon(issuedCouponId);
-    await this.couponService.useIssuedCoupon(issuedCoupon);
+    let issuedCoupon: IssuedCoupon | undefined = undefined;
+    if (issuedCouponId) {
+      issuedCoupon =
+        await this.couponService.getIssuedCouponByIdWithCoupon(issuedCouponId);
+      await this.couponService.useIssuedCoupon(issuedCoupon);
+    }
 
     try {
       await this.balanceService.withdrawBalance(customerId, order.totalPrice);

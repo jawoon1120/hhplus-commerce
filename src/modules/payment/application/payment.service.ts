@@ -15,12 +15,13 @@ export class PaymentService {
   async createPayment(
     order: Order,
     status: PaymentStatus,
-    issuedCoupon: IssuedCoupon | null,
+    issuedCoupon?: IssuedCoupon,
   ): Promise<Payment> {
     const payment = Payment.create({
       orderId: order.id,
       status: status,
       originPrice: order.totalPrice,
+      finalPrice: order.totalPrice,
     });
 
     if (issuedCoupon) {
