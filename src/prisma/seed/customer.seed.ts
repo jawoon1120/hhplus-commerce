@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export const seedCustomer = async (prisma: PrismaClient) => {
-  const customers = await prisma.customer.createMany({
+  await prisma.customer.createMany({
     data: [
       { id: 1, name: '김항해' },
       { id: 2, name: '박항해' },
@@ -10,8 +10,6 @@ export const seedCustomer = async (prisma: PrismaClient) => {
     ],
     skipDuplicates: true,
   });
-
-  console.log(`Created ${customers.count} customer records`);
 };
 
 export const truncateCustomer = async (prisma: PrismaClient) => {

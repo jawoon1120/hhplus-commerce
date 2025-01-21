@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export const seedCoupon = async (prisma: PrismaClient) => {
   const after30Days = new Date(new Date().getTime() + 60 * 60 * 24 * 30);
 
-  const tenPercentDiscountCoupon = await prisma.coupon.createMany({
+  await prisma.coupon.createMany({
     data: [
       {
         id: 1,
@@ -28,8 +28,6 @@ export const seedCoupon = async (prisma: PrismaClient) => {
     ],
     skipDuplicates: true,
   });
-
-  console.log(`Created ${tenPercentDiscountCoupon.count} coupon records`);
 };
 
 export const truncateCoupon = async (prisma: PrismaClient) => {
