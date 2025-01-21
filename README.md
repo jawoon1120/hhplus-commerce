@@ -71,3 +71,28 @@ usecase 중에서 묶을 수 있는 명사를 기준으로 도메인 추출 시�
 ### 마일스톤
 
 ![](./images/milestone.png)
+
+
+### 성능 테스트 명령어
+
+0. k6 설치
+```bash
+brew install k6
+```
+
+1. 포인트 충전
+```bash
+k6 run --verbose load-test/charge-balance.js
+```
+
+2. 주문
+
+```bash
+k6 run --verbose load-test/make-order.js
+```
+
+3. 결제
+
+```bash
+k6 run --verbose load-test/make-payment.js
+```
