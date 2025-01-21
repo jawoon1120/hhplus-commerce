@@ -25,7 +25,7 @@ describe('BalanceRepository 동시성 테스트', () => {
     prisma = moduleRef.get<PrismaService>(PrismaService);
   });
 
-  it('should handle concurrent balance charge requests without loss', async () => {
+  it('should handle concurrent balance charge requests with optimistic concurrency control', async () => {
     const customerId = 2; // 테스트할 고객 ID
     const initialBalance = 30000; // Seed data 초기 잔액
     const chargeAmount = 100; // 충전할 금액
@@ -36,17 +36,16 @@ describe('BalanceRepository 동시성 테스트', () => {
 
     const results = await Promise.allSettled(requests);
 
-    // 모든 요청이 성공했는지 확인
-    results.forEach((result) => {
-      if (result.status === 'fulfilled') {
-        expect(result.value).toBeInstanceOf(Balance);
-      }
-    });
+    const rejectedCount = results.filter(
+      (result) => result.status === 'rejected',
+    ).length;
+    expect(rejectedCount).toBeGreaterThan(0);
 
     const balance = await prisma.balance.findUnique({
       where: { customerId: customerId },
     });
-    expect(balance.amount).toBe(initialBalance + chargeAmount * 5);
+
+    expect(balance.amount).toBeLessThan(initialBalance + chargeAmount * 5);
   });
 
   it('should handle concurrent balance withdrawal requests without loss', async () => {
