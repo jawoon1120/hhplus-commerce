@@ -6,7 +6,7 @@ import * as Joi from 'joi';
 @Module({})
 export class AppConfigService {
   static getEnvFilePath(): string {
-    return path.join(__dirname, '..', '..', '.env');
+    return path.join(__dirname, '.env');
   }
 
   static getEnvConfigs(): ConfigModuleOptions {
