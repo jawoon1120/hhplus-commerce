@@ -96,3 +96,10 @@ k6 run --verbose load-test/make-order.js
 ```bash
 k6 run --verbose load-test/make-payment.js
 ```
+
+
+4. 쿠폰 발급
+
+```bash
+k6 run --verbose load-test/issue-coupon.js
+```
