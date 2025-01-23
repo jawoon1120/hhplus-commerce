@@ -18,7 +18,7 @@ export class CouponRepository implements ICouponRepository {
   async getCouponByIdWithLock(couponId: number): Promise<Coupon> {
     const couponEntities = await this.txHost.tx.$queryRaw<
       CouponEntity[]
-    >`SELECT * FROM Coupon WHERE id = ${couponId} FOR UPDATE`;
+    >`SELECT * FROM Coupon WHERE id = ${couponId}`;
 
     const couponEntity = couponEntities[0];
     return this.couponDataMapper.toDomain(couponEntity);

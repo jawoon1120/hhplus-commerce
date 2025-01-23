@@ -4,6 +4,7 @@ export class Balance {
   id: number;
   customerId: number;
   amount: number;
+  version: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

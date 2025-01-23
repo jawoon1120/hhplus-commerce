@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export const seedOrder = async (prisma: PrismaClient) => {
-  const orders = await prisma.order.create({
+  await prisma.order.create({
     data: {
       id: 1,
       customerId: 1,
@@ -23,8 +23,6 @@ export const seedOrder = async (prisma: PrismaClient) => {
       },
     },
   });
-
-  console.log(`Created ${orders.id} order records`);
 };
 
 export const truncateOrder = async (prisma: PrismaClient) => {

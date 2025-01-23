@@ -26,7 +26,7 @@ export class BalanceRepository implements IBalanceRepository {
   async getBalanceByUserIdWithLock(customerId: number): Promise<Balance> {
     const balances: BalanceEntity[] = await this.txHost.tx.$queryRaw<
       BalanceEntity[]
-    >`SELECT * FROM Balance WHERE customerId = ${customerId} FOR UPDATE`;
+    >`SELECT * FROM Balance WHERE customerId = ${customerId}`;
     const balance = balances[0];
 
     return this.balanceDataMapper.toDomain(balance);
@@ -50,19 +50,28 @@ export class BalanceRepository implements IBalanceRepository {
   }
 
   async chargeBalance(balance: Balance): Promise<Balance> {
-    const updatedBalance = await this.txHost.tx.balance.update({
-      where: { id: balance.id },
-      data: { amount: balance.amount },
+    const updatedBalanceRowCount = await this.txHost.tx.balance.updateMany({
+      data: { amount: balance.amount, version: { increment: 1 } },
+      where: { id: balance.id, version: balance.version },
     });
-    console.log('[UPDATED BALANCE]', updatedBalance);
+
+    if (updatedBalanceRowCount.count === 0) {
+      throw new Error(
+        `충전 요청 중 동시성 충돌이 발생했습니다. 다시 시도해 주세요.`,
+      );
+    }
+
     await this.txHost.tx.balanceHistory.create({
       data: {
-        balanceId: updatedBalance.id,
+        balanceId: balance.id,
         amount: balance.amount.toString(),
         type: 'CHARGE',
       },
     });
 
+    const updatedBalance = await this.prisma.balance.findUnique({
+      where: { id: balance.id },
+    });
     return this.balanceDataMapper.toDomain(updatedBalance);
   }
 }

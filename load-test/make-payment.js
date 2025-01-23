@@ -1,4 +1,4 @@
-// loadtest.js
+import { check, sleep } from 'k6';
 import http from 'k6/http';
 
 export let options = {
@@ -12,7 +12,7 @@ export let options = {
 };
 // VU별 시작 orderId 설정
 const getOrderIdRange = (vuId) => {
-  const startOrderId = 322 + (vuId - 1) * 10; // VU 1은 11부터, VU 2는 21부터...
+  const startOrderId = 447 + (vuId - 1) * 10; // VU 1은 11부터, VU 2는 21부터...
   return startOrderId;
 };
 

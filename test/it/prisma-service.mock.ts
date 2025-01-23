@@ -13,6 +13,7 @@ export class PrismaMockService
           url: process.env.DATABASE_URL,
         },
       },
+      // log: ['query', 'info', 'warn', 'error'],
     });
   }
 

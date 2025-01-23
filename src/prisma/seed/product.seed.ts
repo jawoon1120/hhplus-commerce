@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export const seedProduct = async (prisma: PrismaClient) => {
-  const products = await prisma.product.createMany({
+  await prisma.product.createMany({
     data: [
       {
         id: 1,
@@ -30,8 +30,6 @@ export const seedProduct = async (prisma: PrismaClient) => {
     ],
     skipDuplicates: true,
   });
-
-  console.log(`Created ${products.count} product records`);
 };
 
 export const truncateProduct = async (prisma: PrismaClient) => {

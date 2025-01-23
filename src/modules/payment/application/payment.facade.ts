@@ -10,6 +10,7 @@ import { PgService } from '../../../pg/pg.service';
 import { OrderStatus } from '../../order/domain/order.domain';
 import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
+import { RedisService } from '../../../infrastructure/redis/redis.service';
 
 @Injectable()
 export class PaymentFacade {
@@ -20,6 +21,7 @@ export class PaymentFacade {
     private readonly balanceService: BalanceService,
     private readonly paymentService: PaymentService,
     private readonly pgService: PgService,
+    private readonly redisService: RedisService,
   ) {}
 
   // #1 예외 : order 가격보다 할인 가격이 더 클 때
@@ -34,43 +36,48 @@ export class PaymentFacade {
     customerId: number,
     issuedCouponId?: number,
   ) {
-    const customer = await this.customerService.getCustomerById(customerId);
-    const order = await this.orderService.getOrderById(orderId);
-    if (customer.id !== order.customerId) {
-      throw new BadRequestException('Customer and order do not match');
-    }
+    const lockKey = `balance:${customerId}`;
+    return await this.redisService.withSpinLock(lockKey, async () => {
+      const customer = await this.customerService.getCustomerById(customerId);
+      const order = await this.orderService.getOrderById(orderId);
+      if (customer.id !== order.customerId) {
+        throw new BadRequestException('Customer and order do not match');
+      }
 
-    let issuedCoupon: IssuedCoupon | undefined = undefined;
-    if (issuedCouponId) {
-      issuedCoupon =
-        await this.couponService.getIssuedCouponByIdWithCoupon(issuedCouponId);
-      await this.couponService.useIssuedCoupon(issuedCoupon);
-    }
+      let issuedCoupon: IssuedCoupon | undefined = undefined;
+      if (issuedCouponId) {
+        issuedCoupon =
+          await this.couponService.getIssuedCouponByIdWithCoupon(
+            issuedCouponId,
+          );
+        await this.couponService.useIssuedCoupon(issuedCoupon);
+      }
 
-    try {
-      await this.balanceService.withdrawBalance(customerId, order.totalPrice);
-    } catch {
+      try {
+        await this.balanceService.withdrawBalance(customerId, order.totalPrice);
+      } catch {
+        const payment = await this.paymentService.createPayment(
+          order,
+          PaymentStatus.CANCELED,
+          issuedCoupon,
+        );
+        await this.orderService.updateOrderStatus(order, OrderStatus.CANCELED);
+        return payment;
+      }
+
       const payment = await this.paymentService.createPayment(
         order,
-        PaymentStatus.CANCELED,
+        PaymentStatus.PAID,
         issuedCoupon,
       );
-      await this.orderService.updateOrderStatus(order, OrderStatus.CANCELED);
+
+      const isSuccess = await this.pgService.requestPayment(payment.id);
+      await this.paymentService.updatePaymentStatus(
+        payment.id,
+        isSuccess ? PaymentStatus.COMPLETED : PaymentStatus.CANCELED,
+      );
+      await this.orderService.updateOrderStatus(order, OrderStatus.PAID);
       return payment;
-    }
-
-    const payment = await this.paymentService.createPayment(
-      order,
-      PaymentStatus.PAID,
-      issuedCoupon,
-    );
-
-    const isSuccess = await this.pgService.requestPayment(payment.id);
-    await this.paymentService.updatePaymentStatus(
-      payment.id,
-      isSuccess ? PaymentStatus.COMPLETED : PaymentStatus.CANCELED,
-    );
-    await this.orderService.updateOrderStatus(order, OrderStatus.PAID);
-    return payment;
+    });
   }
 }

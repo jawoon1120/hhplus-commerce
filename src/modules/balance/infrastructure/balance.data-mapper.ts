@@ -20,6 +20,7 @@ export class BalanceDataMapper extends DataMapper<Balance, BalanceEntity> {
       id: balance.id,
       customerId: balance.customerId,
       amount: balance.amount,
+      version: balance.version,
       createdAt: balance.createdAt,
       updatedAt: balance.updatedAt,
       deletedAt: balance.deletedAt,

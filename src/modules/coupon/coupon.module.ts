@@ -8,6 +8,7 @@ import { IssuedCouponRepository } from './infrastructure/issued-coupon.resposito
 import { IIssuedCouponRepository } from './application/issued-coupon-repository.interface';
 import { CouponRepository } from './infrastructure/coupon.respository';
 import { ICouponRepository } from './application/coupon-repository.interface';
+import { IoRedisModule } from '../../infrastructure/redis/redis.module';
 
 @Module({
   controllers: [CouponController],
@@ -24,7 +25,7 @@ import { ICouponRepository } from './application/coupon-repository.interface';
       useClass: CouponRepository,
     },
   ],
-  imports: [PrismaModule],
+  imports: [PrismaModule, IoRedisModule],
   exports: [CouponService, IssuedCouponDataMapper],
 })
 export class CouponModule {}

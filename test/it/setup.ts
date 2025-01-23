@@ -3,11 +3,24 @@ import { PrismaClient } from '@prisma/client';
 import { execSync } from 'node:child_process';
 import { runPrismaDbPush } from './util/db-push';
 import { seedAll } from './util/seed';
+import { RedisContainer } from '@testcontainers/redis';
 
 const init = async () => {
-  await Promise.all([initMysql()]);
+  await Promise.all([initMysql(), initRedis()]);
 };
 let connectionString: string;
+let redisUrl: string;
+
+const initRedis = async () => {
+  const redis = await new RedisContainer('redis:7.0')
+    .withExposedPorts(6379)
+    .start();
+
+  global.redis = redis;
+  redisUrl = `redis://${redis.getHost()}:${redis.getMappedPort(6379)}`;
+
+  process.env.REDIS_URL = redisUrl;
+};
 
 const initMysql = async () => {
   //TODO: .env.test랑 연결

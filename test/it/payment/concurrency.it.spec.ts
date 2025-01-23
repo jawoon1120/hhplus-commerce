@@ -6,6 +6,7 @@ import { ClsModule } from 'nestjs-cls';
 import { AppModule } from '../../../src/app.module';
 import { PrismaService } from '../../../src/infrastructure/database/prisma.service';
 import { clsModuleMockOption } from '../cls-module.mock';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 describe('Payment Service 동시성 테스트', () => {
   let paymentFacade: PaymentFacade;
@@ -19,6 +20,15 @@ describe('Payment Service 동시성 테스트', () => {
       .useClass(PrismaMockService)
       .overrideModule(ClsModule)
       .useModule(ClsModule.forRoot(clsModuleMockOption))
+      .overrideModule(RedisModule)
+      .useModule(
+        RedisModule.forRootAsync({
+          useFactory: () => ({
+            type: 'single',
+            url: process.env.REDIS_URL,
+          }),
+        }),
+      )
       .compile();
 
     paymentFacade = moduleRef.get<PaymentFacade>(PaymentFacade);

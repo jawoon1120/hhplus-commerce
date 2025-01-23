@@ -5,6 +5,7 @@ model Balance {
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   deletedAt        DateTime?
+  version          Int              @default(0)
   Customer         Customer         @relation(fields: [customerId], references: [id], map: "Balance_buyerId_fkey")
   balanceHistories BalanceHistory[]
 }
