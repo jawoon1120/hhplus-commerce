@@ -9,8 +9,9 @@ import { OrderDataMapper } from './infrastructure/order.data-mapper';
 import { OrderDetailDataMapper } from './infrastructure/order-detail.data-mapper';
 import { OrderRepository } from './infrastructure/order.repository';
 import { IOrderRepository } from './application/order-repository.interface';
+import { IoRedisModule } from '../../infrastructure/redis/redis.module';
 @Module({
-  imports: [ProductModule, PrismaModule, CustomerModule],
+  imports: [ProductModule, PrismaModule, CustomerModule, IoRedisModule],
   controllers: [OrderController],
   providers: [
     OrderService,

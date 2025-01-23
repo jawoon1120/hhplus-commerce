@@ -6,8 +6,8 @@ import { ClsModule } from 'nestjs-cls';
 import { AppModule } from '../../../src/app.module';
 import { PrismaService } from '../../../src/infrastructure/database/prisma.service';
 import { clsModuleMockOption } from '../cls-module.mock';
-import { Product as ProductEntity } from '@prisma/client';
 import { OrderCreateRequestDto } from '../../../src/modules/order/presentation/dto/order-create.dto';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 describe('Order Service 동시성 테스트', () => {
   let orderFacade: OrderFacade;
@@ -21,6 +21,15 @@ describe('Order Service 동시성 테스트', () => {
       .useClass(PrismaMockService)
       .overrideModule(ClsModule)
       .useModule(ClsModule.forRoot(clsModuleMockOption))
+      .overrideModule(RedisModule)
+      .useModule(
+        RedisModule.forRootAsync({
+          useFactory: () => ({
+            type: 'single',
+            url: process.env.REDIS_URL,
+          }),
+        }),
+      )
       .compile();
 
     orderFacade = moduleRef.get<OrderFacade>(OrderFacade);
@@ -60,10 +69,10 @@ describe('Order Service 동시성 테스트', () => {
       (result) => result.status === 'fulfilled',
     ).length;
 
-    const savedProduct = await prismaService.$queryRaw<
-      ProductEntity[]
-    >`SELECT * FROM hhpluscommerce.Product WHERE id = ${productId} for update`;
+    const savedProduct = await prismaService.product.findUnique({
+      where: { id: productId },
+    });
 
-    expect(savedProduct[0].stock).toBe(10 - orderQuantity * successfulOrders);
+    expect(savedProduct.stock).toBe(10 - orderQuantity * successfulOrders);
   });
 });

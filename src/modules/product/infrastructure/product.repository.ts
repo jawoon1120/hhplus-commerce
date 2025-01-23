@@ -58,8 +58,7 @@ export class ProductRepository implements IProductRepository {
       ProductEntity[]
     >`
           SELECT * FROM Product 
-          WHERE id IN (${Prisma.join(ids)}) 
-          FOR UPDATE
+          WHERE id IN (${Prisma.join(ids)})
         `;
 
     return products.map((product) => this.productDataMapper.toDomain(product));
