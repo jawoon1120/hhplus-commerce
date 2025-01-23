@@ -15,6 +15,7 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaService } from './infrastructure/database/prisma.service';
 import { PgModule } from './pg/pg.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 const serviceModules = [
   CouponModule,
@@ -46,6 +47,12 @@ const serviceModules = [
       middleware: { mount: true },
     }),
     PgModule,
+    RedisModule.forRootAsync({
+      useFactory: () => ({
+        type: 'single',
+        url: 'redis://localhost:6379',
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
