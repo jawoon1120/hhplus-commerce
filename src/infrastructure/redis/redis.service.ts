@@ -4,7 +4,7 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class RedisService {
-  private readonly lockTimeout = 3000; // 10초
+  private readonly lockTimeout = 5000; // 10초
   private readonly maxRetries = 5; // 최대 재시도 횟수
   private readonly retryDelay = 100; // 재시도 간격 (1초)
 
