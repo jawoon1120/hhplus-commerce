@@ -26,7 +26,7 @@ export class BalanceRepository implements IBalanceRepository {
   async getBalanceByUserIdWithLock(customerId: number): Promise<Balance> {
     const balances: BalanceEntity[] = await this.txHost.tx.$queryRaw<
       BalanceEntity[]
-    >`SELECT * FROM Balance WHERE customerId = ${customerId} FOR UPDATE`;
+    >`SELECT * FROM Balance WHERE customerId = ${customerId}`;
     const balance = balances[0];
 
     return this.balanceDataMapper.toDomain(balance);

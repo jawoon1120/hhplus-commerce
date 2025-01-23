@@ -12,6 +12,7 @@ import { CouponModule } from '../coupon/coupon.module';
 import { CustomerModule } from '../customer/customer.module';
 import { BalanceModule } from '../balance/balance.module';
 import { OrderModule } from '../order/order.module';
+import { IoRedisModule } from '../../infrastructure/redis/redis.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OrderModule } from '../order/order.module';
     CustomerModule,
     OrderModule,
     BalanceModule,
+    IoRedisModule,
   ],
   controllers: [PaymentController],
   providers: [
