@@ -9,6 +9,7 @@ import {
 import { Transactional } from '@nestjs-cls/transactional';
 import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
+import { RedisService } from '../../../infrastructure/redis/redis.service';
 
 @Injectable()
 export class CouponService {
@@ -17,6 +18,7 @@ export class CouponService {
     private readonly couponRepository: ICouponRepository,
     @Inject(IIssuedCouponRepository)
     private readonly issuedCouponRepository: IIssuedCouponRepository,
+    private readonly redisService: RedisService, // RedisService 주입
   ) {}
 
   async getCoupons(): Promise<Coupon[]> {
@@ -55,23 +57,27 @@ export class CouponService {
     customerId: number,
     couponId: number,
   ): Promise<IssuedCoupon> {
-    const coupon = await this.couponRepository.getCouponByIdWithLock(couponId);
-    if (!coupon) {
-      throw new NotFoundException('Coupon not found');
-    }
-    if (coupon.remainingQuantity <= 0) {
-      throw new BadRequestException('Coupon is sold out');
-    }
+    const lockKey = `coupon:issue:${couponId}`;
+    return await this.redisService.withSpinLock(lockKey, async () => {
+      const coupon =
+        await this.couponRepository.getCouponByIdWithLock(couponId);
+      if (!coupon) {
+        throw new NotFoundException('Coupon not found');
+      }
+      if (coupon.remainingQuantity <= 0) {
+        throw new BadRequestException('Coupon is sold out');
+      }
 
-    const issuedCoupon = IssuedCoupon.create({
-      customerId,
-      couponId: coupon.id,
-      expiredDate: coupon.endDate,
-      status: IssuedCouponStatus.UNUSED,
+      const issuedCoupon = IssuedCoupon.create({
+        customerId,
+        couponId: coupon.id,
+        expiredDate: coupon.endDate,
+        status: IssuedCouponStatus.UNUSED,
+      });
+
+      await this.couponRepository.decreaseCouponQuantityOnlyOne(couponId);
+
+      return await this.issuedCouponRepository.issueCoupon(issuedCoupon);
     });
-
-    await this.couponRepository.decreaseCouponQuantityOnlyOne(couponId);
-
-    return await this.issuedCouponRepository.issueCoupon(issuedCoupon);
   }
 }
