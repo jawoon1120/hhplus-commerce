@@ -6,10 +6,10 @@ import {
   IssuedCoupon,
   IssuedCouponStatus,
 } from '../domain/issued-coupon.domain';
-import { Transactional } from '@nestjs-cls/transactional';
 import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
 import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
-import { RedisService } from '../../../infrastructure/redis/redis.service';
+import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class CouponService {
@@ -18,7 +18,7 @@ export class CouponService {
     private readonly couponRepository: ICouponRepository,
     @Inject(IIssuedCouponRepository)
     private readonly issuedCouponRepository: IIssuedCouponRepository,
-    private readonly redisService: RedisService, // RedisService 주입
+    private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async getCoupons(): Promise<Coupon[]> {
@@ -52,10 +52,38 @@ export class CouponService {
     return await this.issuedCouponRepository.updateIssuedCoupon(issuedCoupon);
   }
 
-  @Transactional()
-  async issueCoupon(
+  async registerIssueCouponWaitingList(
     customerId: number,
     couponId: number,
+  ): Promise<void> {
+    let couponInfo = await this.couponRepository.getCouponInfo(couponId);
+    if (!couponInfo) {
+      const newCoupon = await this.couponRepository.getCouponById(couponId);
+      couponInfo = {
+        startDate: newCoupon.startDate,
+        totalQuantity: newCoupon.totalQuantity,
+        endDate: newCoupon.endDate,
+      };
+      await this.couponRepository.setCouponInfo(couponId, couponInfo);
+      const cronJob = this.generateIssueCouponCronJob(couponId);
+      this.schedulerRegistry.addCronJob(`ISSUE_COUPON_${couponId}`, cronJob);
+      cronJob.start();
+    }
+
+    if (couponInfo.startDate > new Date()) {
+      throw new BadRequestException('Coupon is not available');
+    }
+
+    await this.couponRepository.waitingCouponIssue(couponId, customerId);
+    return;
+  }
+
+  generateIssueCouponCronJob(couponId: number): CronJob {
+    return new CronJob(CronExpression.EVERY_MINUTE, () => {
+      this.issueCouponThroughWaitingList(couponId);
+    });
+  }
+
   ): Promise<IssuedCoupon> {
     const lockKey = `coupon:issue:${couponId}`;
     return await this.redisService.withSpinLock(lockKey, async () => {

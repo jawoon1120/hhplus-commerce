@@ -5,10 +5,7 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import {
-  CouponIssueRequestDto,
-  CouponIssueResponseDto,
-} from './dto/coupon-issue.dto';
+import { CouponIssueRequestDto } from './dto/coupon-issue.dto';
 import { OwnedCouponQueryDto } from './dto/owned-coupon-query.dto';
 import { CouponService } from '../application/coupon.service';
 
@@ -32,21 +29,19 @@ export class CouponController {
 
   @Post()
   @ApiOperation({
-    summary: '쿠폰 발급',
-    description: '쿠폰을 발급합니다.',
+    summary: '쿠폰 발급 대기열 등록',
+    description: '쿠폰 발급 대기열에 등록합니다.',
   })
   @ApiCreatedResponse({
-    description: '쿠폰 발급 성공',
+    description: '대기열 등록 성공',
   })
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async issueCoupon(
-    @Body() issueDto: CouponIssueRequestDto,
-  ): Promise<CouponIssueResponseDto> {
-    const issuedCoupon = await this.couponService.issueCoupon(
+  async issueCoupon(@Body() issueDto: CouponIssueRequestDto): Promise<void> {
+    await this.couponService.registerIssueCouponWaitingList(
       issueDto.customerId,
       issueDto.couponId,
     );
-    return { issuedCouponId: issuedCoupon.id };
+    return;
   }
 
   @Get('/users/:customerId')
