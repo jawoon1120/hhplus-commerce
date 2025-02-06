@@ -84,28 +84,49 @@ export class CouponService {
     });
   }
 
-  ): Promise<IssuedCoupon> {
-    const lockKey = `coupon:issue:${couponId}`;
-    return await this.redisService.withSpinLock(lockKey, async () => {
-      const coupon =
-        await this.couponRepository.getCouponByIdWithLock(couponId);
-      if (!coupon) {
-        throw new NotFoundException('Coupon not found');
-      }
-      if (coupon.remainingQuantity <= 0) {
-        throw new BadRequestException('Coupon is sold out');
-      }
+  async issueCouponThroughWaitingList(couponId: number) {
+    const coupon = await this.couponRepository.getCouponById(couponId);
 
-      const issuedCoupon = IssuedCoupon.create({
+    const nextIssuedCouponCount = coupon.remainingQuantity;
+    if (nextIssuedCouponCount <= 0) {
+      this.schedulerRegistry.getCronJob(`ISSUE_COUPON_${couponId}`).stop();
+      await this.couponRepository.delCouponInfo(couponId);
+      await this.couponRepository.delCouponWaitingList(couponId);
+      await this.issuedCouponRepository.delCouponHistory(couponId);
+    }
+
+    const waitingCustomerIdList =
+      await this.couponRepository.getWaitingListByTimeOrder(
+        couponId,
+        nextIssuedCouponCount,
+      );
+    if (waitingCustomerIdList.length <= 0) return;
+
+    await this.couponRepository.removeCustomerFromWaitingList(
+      couponId,
+      nextIssuedCouponCount,
+    );
+
+    const issuedCouponList = waitingCustomerIdList.map((customerId) => {
+      return new IssuedCoupon({
         customerId,
-        couponId: coupon.id,
+        couponId,
         expiredDate: coupon.endDate,
         status: IssuedCouponStatus.UNUSED,
       });
-
-      await this.couponRepository.decreaseCouponQuantityOnlyOne(couponId);
-
-      return await this.issuedCouponRepository.issueCoupon(issuedCoupon);
     });
+
+    await this.issuedCouponRepository.applyIssuedCoupons(issuedCouponList);
+    await this.issuedCouponRepository.saveIssuedCouponHistory(
+      couponId,
+      waitingCustomerIdList,
+    );
+
+    await this.couponRepository.decreaseCouponQuantity(
+      couponId,
+      issuedCouponList.length,
+    );
+
+    return;
   }
 }
