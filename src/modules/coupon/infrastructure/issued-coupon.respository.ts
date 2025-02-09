@@ -7,6 +7,8 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { IssuedCouponDataMapper } from './issued-coupon.data-mapper';
 import { IIssuedCouponRepository } from '../application/issued-coupon-repository.interface';
 import { CouponDataMapper } from './coupon.data-mapper';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 @Injectable()
 export class IssuedCouponRepository implements IIssuedCouponRepository {
@@ -15,6 +17,7 @@ export class IssuedCouponRepository implements IIssuedCouponRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     private readonly issuedCouponDataMapper: IssuedCouponDataMapper,
     private readonly couponDataMapper: CouponDataMapper,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
   async getOwnedCoupons(customerId: number): Promise<IssuedCoupon[]> {
     const issuedCouponEntities = await this.prisma.issuedCoupon.findMany({
@@ -64,5 +67,40 @@ export class IssuedCouponRepository implements IIssuedCouponRepository {
       data: issuedCouponEntity,
     });
     return this.issuedCouponDataMapper.toDomain(updatedIssuedCouponEntity);
+  }
+
+  async applyIssuedCoupons(issuedCouponList: IssuedCoupon[]): Promise<void> {
+    await this.prisma.issuedCoupon.createMany({
+      data: issuedCouponList.map((issuedCoupon) =>
+        this.issuedCouponDataMapper.toEntity(issuedCoupon),
+      ),
+    });
+  }
+
+  async saveIssuedCouponHistory(
+    couponId: number,
+    issuedCouponCustomerIds: number[],
+  ): Promise<void> {
+    await this.redis.sadd(`issued-coupon:${couponId}`, issuedCouponCustomerIds);
+  }
+
+  async checkCouponHistory(
+    customerId: number,
+    couponId: number,
+  ): Promise<boolean> {
+    const result = await this.redis.sismember(
+      `issued-coupon:${couponId}`,
+      customerId,
+    );
+    return result === 1;
+  }
+
+  async getIssuedCouponCount(couponId: number): Promise<number> {
+    const result = await this.redis.scard(`issued-coupon:${couponId}`);
+    return result;
+  }
+
+  async delCouponHistory(couponId: number): Promise<void> {
+    await this.redis.del(`issued-coupon:${couponId}`);
   }
 }

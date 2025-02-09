@@ -16,6 +16,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { PrismaService } from './infrastructure/database/prisma.service';
 import { PgModule } from './pg/pg.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const serviceModules = [
   CouponModule,
@@ -30,6 +31,7 @@ const serviceModules = [
     ConfigModule.forRoot(AppConfigService.getEnvConfigs()),
     PrismaModule,
     CustomerModule,
+    ScheduleModule.forRoot(),
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({

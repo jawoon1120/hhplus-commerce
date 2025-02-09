@@ -10,6 +10,7 @@ import {
 import { ClsModule } from 'nestjs-cls';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { NotFoundException } from '../../../common/custom-exception/not-found.exception';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 describe('CouponService', () => {
   let service: CouponService;
@@ -40,11 +41,12 @@ describe('CouponService', () => {
           useValue: mockTxHost,
         },
         CouponService,
+        SchedulerRegistry,
         {
           provide: ICouponRepository,
           useValue: {
             getCoupons: jest.fn(),
-            getCouponByIdWithLock: jest.fn(),
+            getCouponById: jest.fn(),
             decreaseCouponQuantityOnlyOne: jest.fn(),
           },
         },
