@@ -68,7 +68,52 @@ export class CouponService {
         throw new BadRequestException('Coupon is sold out');
       }
 
+<<<<<<< Updated upstream
       const issuedCoupon = IssuedCoupon.create({
+=======
+    if (couponInfo.startDate > new Date()) {
+      throw new BadRequestException('Coupon is not available');
+    }
+
+    await this.couponRepository.waitingCouponIssue(couponId, customerId);
+    return;
+  }
+
+  generateIssueCouponCronJob(couponId: number): CronJob {
+    return new CronJob(CronExpression.EVERY_MINUTE, () => {
+      this.issueCouponThroughWaitingList(couponId);
+    });
+  }
+
+  // TODO: getWaitingListByTimeOrder 할때 제거와 조회 로직을 같이 넣자
+  // TODO: 동시성 고려 & 통합테스트 코드 작성
+  // TODO: sismember 로직 빼자
+  async issueCouponThroughWaitingList(couponId: number) {
+    const coupon = await this.couponRepository.getCouponById(couponId);
+
+    const nextIssuedCouponCount = coupon.remainingQuantity;
+    if (nextIssuedCouponCount <= 0) {
+      this.schedulerRegistry.getCronJob(`ISSUE_COUPON_${couponId}`).stop();
+      await this.couponRepository.delCouponInfo(couponId);
+      await this.couponRepository.delCouponWaitingList(couponId);
+      await this.issuedCouponRepository.delCouponHistory(couponId);
+    }
+
+    const waitingCustomerIdList =
+      await this.couponRepository.getWaitingListByTimeOrder(
+        couponId,
+        nextIssuedCouponCount,
+      );
+    if (waitingCustomerIdList.length <= 0) return;
+
+    await this.couponRepository.removeCustomerFromWaitingList(
+      couponId,
+      nextIssuedCouponCount,
+    );
+
+    const issuedCouponList = waitingCustomerIdList.map((customerId) => {
+      return new IssuedCoupon({
+>>>>>>> Stashed changes
         customerId,
         couponId: coupon.id,
         expiredDate: coupon.endDate,

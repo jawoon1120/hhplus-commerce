@@ -71,7 +71,9 @@ export class PaymentFacade {
         issuedCoupon,
       );
 
+      // TODO: 여기서 결제 생성 완료 event 발행
       const isSuccess = await this.pgService.requestPayment(payment.id);
+
       await this.paymentService.updatePaymentStatus(
         payment.id,
         isSuccess ? PaymentStatus.COMPLETED : PaymentStatus.CANCELED,

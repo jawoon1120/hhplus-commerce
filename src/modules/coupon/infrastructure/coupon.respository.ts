@@ -7,6 +7,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { CouponDataMapper } from './coupon.data-mapper';
 
+// TODO: redis, rdb 분리이후 repository에서 잘 말아서 쓰는 리팩토링!
 @Injectable()
 export class CouponRepository implements ICouponRepository {
   constructor(
