@@ -10,6 +10,7 @@ import { ICouponInfo } from '../domain/interface/coupon-info.interface';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
+// TODO: redis, rdb 분리이후 repository에서 잘 말아서 쓰는 리팩토링!
 @Injectable()
 export class CouponRepository implements ICouponRepository {
   constructor(

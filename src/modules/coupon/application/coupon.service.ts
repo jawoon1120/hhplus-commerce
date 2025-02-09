@@ -55,6 +55,7 @@ export class CouponService {
   async registerIssueCouponWaitingList(
     customerId: number,
     couponId: number,
+
   ): Promise<void> {
     let couponInfo = await this.couponRepository.getCouponInfo(couponId);
     if (!couponInfo) {
@@ -84,6 +85,9 @@ export class CouponService {
     });
   }
 
+  // TODO: getWaitingListByTimeOrder 할때 제거와 조회 로직을 같이 넣자
+  // TODO: 동시성 고려 & 통합테스트 코드 작성
+  // TODO: sismember 로직 빼자
   async issueCouponThroughWaitingList(couponId: number) {
     const coupon = await this.couponRepository.getCouponById(couponId);
 
