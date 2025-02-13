@@ -6,11 +6,12 @@ import { BalanceService } from '../../balance/application/balance.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { PaymentService } from './payment.service';
 import { PaymentStatus } from '../domain/payment.domain';
-import { PgService } from '../../../pg/pg.service';
 import { OrderStatus } from '../../order/domain/order.domain';
 import { BadRequestException } from '../../../common/custom-exception/bad-request.exception';
 import { IssuedCoupon } from '../../coupon/domain/issued-coupon.domain';
 import { RedisService } from '../../../infrastructure/redis/redis.service';
+import { CompletePaymentEvent } from '../events/complete-payment.event';
+import { EventBus } from '@nestjs/cqrs';
 
 @Injectable()
 export class PaymentFacade {
@@ -20,8 +21,8 @@ export class PaymentFacade {
     private readonly orderService: OrderService,
     private readonly balanceService: BalanceService,
     private readonly paymentService: PaymentService,
-    private readonly pgService: PgService,
     private readonly redisService: RedisService,
+    private readonly eventBus: EventBus,
   ) {}
 
   // #1 예외 : order 가격보다 할인 가격이 더 클 때
@@ -71,14 +72,9 @@ export class PaymentFacade {
         issuedCoupon,
       );
 
-      // TODO: 여기서 결제 생성 완료 event 발행
-      const isSuccess = await this.pgService.requestPayment(payment.id);
-
-      await this.paymentService.updatePaymentStatus(
-        payment.id,
-        isSuccess ? PaymentStatus.COMPLETED : PaymentStatus.CANCELED,
-      );
       await this.orderService.updateOrderStatus(order, OrderStatus.PAID);
+
+      this.eventBus.publish(new CompletePaymentEvent(payment.id));
       return payment;
     });
   }
