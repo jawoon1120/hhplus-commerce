@@ -10,7 +10,7 @@ import { AppConfigService } from './configs/configs.service';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.connectMicroservice<MicroserviceOptions>(
-    AppConfigService.getKafkaOptions(),
+    AppConfigService.getKafkaMSAOptions(),
   );
 
   const config = new DocumentBuilder()
@@ -35,6 +35,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
+  await app.startAllMicroservices();
   await app.listen(3000);
 }
 bootstrap();

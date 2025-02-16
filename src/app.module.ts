@@ -18,6 +18,7 @@ import { PgModule } from './pg/pg.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 const serviceModules = [
   CouponModule,
@@ -32,6 +33,13 @@ const serviceModules = [
     ConfigModule.forRoot(AppConfigService.getEnvConfigs()),
     PrismaModule,
     CustomerModule,
+    ClientsModule.register([
+      {
+        name: 'KAFKA_CLIENT',
+        transport: Transport.KAFKA,
+        options: AppConfigService.getKafkaClientOptions(),
+      },
+    ]),
     ScheduleModule.forRoot(),
     ClsModule.forRoot({
       plugins: [

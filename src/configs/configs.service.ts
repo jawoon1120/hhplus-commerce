@@ -32,19 +32,25 @@ export class AppConfigService {
     return connectionString;
   }
 
-  static getKafkaOptions(): KafkaOptions {
-    const kafkaOptions: KafkaOptions = {
-      transport: Transport.KAFKA,
-      options: {
-        client: {
-          clientId: 'nestjs',
-          brokers: ['localhost:9092', 'localhost:9093', 'localhost:9094'],
-        },
-        consumer: {
-          groupId: 'nestjs-consumer',
-        },
+  static getKafkaClientOptions(): KafkaOptions['options'] {
+    const option = {
+      client: {
+        clientId: 'nestjs',
+        brokers: ['localhost:9092'],
+      },
+      consumer: {
+        groupId: 'nestjs-consumer',
       },
     };
+    return option;
+  }
+
+  static getKafkaMSAOptions() {
+    const kafkaOptions: KafkaOptions = {
+      transport: Transport.KAFKA,
+      options: this.getKafkaClientOptions(),
+    };
+
     return kafkaOptions;
   }
 }
