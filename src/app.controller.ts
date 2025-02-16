@@ -4,6 +4,7 @@ import {
   Inject,
   OnModuleDestroy,
   OnModuleInit,
+  Post,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
@@ -22,7 +23,17 @@ export class AppController implements OnModuleInit, OnModuleDestroy {
     return this.appService.getHello();
   }
 
+  @Post('kafka')
+  getKafka(): string {
+    this.kafkaClient.emit('TEST', {
+      message: 'Hello World',
+    });
+    return 'Hello World';
+  }
+
   async onModuleInit(): Promise<void> {
+    const topic = ['TEST'];
+    topic.forEach((t) => this.kafkaClient.subscribeToResponseOf(t));
     await this.kafkaClient.connect();
   }
 
