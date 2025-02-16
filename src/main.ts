@@ -4,9 +4,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { AppConfigService } from './configs/configs.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.connectMicroservice<MicroserviceOptions>(
+    AppConfigService.getKafkaOptions(),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('항해 이커머스')

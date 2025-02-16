@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModuleOptions, ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as Joi from 'joi';
+import { KafkaOptions, Transport } from '@nestjs/microservices';
 
 @Module({})
 export class AppConfigService {
@@ -29,5 +30,21 @@ export class AppConfigService {
     const connectionString = `mysql://${configService.get<string>('RDB_USER')}:${configService.get<string>('RDB_PASSWORD')}@${configService.get<string>('RDB_HOST')}:${configService.get<string>('RDB_PORT')}/${configService.get<string>('RDB_NAME')}`;
 
     return connectionString;
+  }
+
+  static getKafkaOptions(): KafkaOptions {
+    const kafkaOptions: KafkaOptions = {
+      transport: Transport.KAFKA,
+      options: {
+        client: {
+          clientId: 'nestjs',
+          brokers: ['localhost:9092', 'localhost:9093', 'localhost:9094'],
+        },
+        consumer: {
+          groupId: 'nestjs-consumer',
+        },
+      },
+    };
+    return kafkaOptions;
   }
 }
