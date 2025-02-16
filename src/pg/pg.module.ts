@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { PgService } from './pg.service';
+import { PgService } from './application/pg.service';
+import { CompletePaymentHandler } from './events/complete-payment.handler';
 
 @Module({
-  providers: [PgService],
-  exports: [PgService],
+  providers: [PgService, CompletePaymentHandler],
+  exports: [CompletePaymentHandler],
 })
 export class PgModule {}

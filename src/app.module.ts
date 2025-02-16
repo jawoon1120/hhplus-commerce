@@ -17,6 +17,7 @@ import { PrismaService } from './infrastructure/database/prisma.service';
 import { PgModule } from './pg/pg.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CqrsModule } from '@nestjs/cqrs';
 
 const serviceModules = [
   CouponModule,
@@ -55,6 +56,7 @@ const serviceModules = [
         url: 'redis://localhost:6379',
       }),
     }),
+    CqrsModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
