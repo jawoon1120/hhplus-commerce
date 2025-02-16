@@ -7,6 +7,8 @@ import { Product } from '../domain/product.domain';
 import { IProductRepository } from '../domain/product-repository.interface';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { PaymentStatus } from '../../payment/domain/payment.domain';
+import { PopularProduct } from './interface/popular-product.interface';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
@@ -85,42 +87,18 @@ export class ProductRepository implements IProductRepository {
     const daysAgo = new Date();
     daysAgo.setDate(daysAgo.getDate() - days);
 
-    const products = await this.txHost.tx.product.findMany({
-      where: {
-        orderDetails: {
-          some: {
-            order: {
-              payment: {
-                status: 'COMPLETED',
-                createdAt: {
-                  gte: daysAgo,
-                },
-              },
-            },
-          },
-        },
-      },
-      include: {
-        orderDetails: {
-          where: {
-            order: {
-              payment: {
-                status: 'COMPLETED',
-                createdAt: {
-                  gte: daysAgo,
-                },
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        orderDetails: {
-          _count: 'desc',
-        },
-      },
-      take: 5,
-    });
+    const products: PopularProduct[] = await this.txHost.tx.$queryRaw`
+      SELECT p.*, SUM(od.quantity) as totalQuantity
+      FROM Product p
+      JOIN OrderDetail od ON p.id = od.productId
+      JOIN \`Order\` o ON od.orderId = o.id
+      JOIN Payment pm ON o.id = pm.orderId
+      WHERE pm.status = ${PaymentStatus.COMPLETED}
+        AND pm.createdAt >= ${daysAgo}
+      GROUP BY p.id, p.name, p.price, p.sellerId, p.totalQuantity, p.stock, p.createdAt, p.updatedAt, p.deletedAt
+      ORDER BY totalQuantity DESC
+      LIMIT 5
+    `;
 
     return products.map((product) => this.productDataMapper.toDomain(product));
   }
