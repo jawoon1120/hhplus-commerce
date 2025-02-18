@@ -74,7 +74,13 @@ export class PaymentFacade {
 
       await this.orderService.updateOrderStatus(order, OrderStatus.PAID);
 
-      this.eventBus.publish(new CompletePaymentEvent(payment.id));
+      this.eventBus.publish(
+        new CompletePaymentEvent(
+          payment.id,
+          payment.finalPrice,
+          payment.orderId,
+        ),
+      );
       return payment;
     });
   }
