@@ -1,0 +1,10 @@
+model Outbox {
+  id        Int       @id @default(autoincrement())
+  topic     String
+  message   String
+  status    String
+  producer  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
