@@ -25,10 +25,13 @@ export class CompletePaymentHandler
       'payment',
     );
 
-    this.kafkaClient.emit(
-      'COMPLETE_PAYMENT',
-      new CompletePaymentMessage(paymentId, outbox.id, finalPrice, orderId),
+    const message = new CompletePaymentMessage(
+      paymentId,
+      outbox.id,
+      finalPrice,
+      orderId,
     );
+    this.kafkaClient.emit('COMPLETE_PAYMENT', message.toObject());
 
     return;
   }

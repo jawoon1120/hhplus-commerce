@@ -8,4 +8,13 @@ export class CompletePaymentMessage implements IEvent {
     public readonly finalPrice: number,
     public readonly orderId: number,
   ) {}
+
+  toObject() {
+    return {
+      paymentId: this.paymentId,
+      outboxId: this.outboxId,
+      finalPrice: this.finalPrice,
+      orderId: this.orderId,
+    };
+  }
 }
