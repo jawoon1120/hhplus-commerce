@@ -12,13 +12,20 @@ export class OutboxService {
     status: OutboxStatus,
     producer: string,
   ) {
-    await this.prisma.outbox.create({
+    return await this.prisma.outbox.create({
       data: {
         topic,
         message,
         status,
         producer,
       },
+    });
+  }
+
+  async updateOutbox(id: number, status: OutboxStatus) {
+    return await this.prisma.outbox.update({
+      where: { id },
+      data: { status },
     });
   }
 }
