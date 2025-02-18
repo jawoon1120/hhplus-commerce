@@ -36,7 +36,7 @@ export class AppConfigService {
     const option = {
       client: {
         clientId: 'nestjs',
-        brokers: ['localhost:9092'],
+        brokers: ['localhost:9092', 'localhost:9093', 'localhost:9094'],
       },
       consumer: {
         groupId: 'nestjs-consumer',
