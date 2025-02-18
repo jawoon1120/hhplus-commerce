@@ -22,6 +22,7 @@ export class AppConfigService {
         RDB_PASSWORD: Joi.string().required(),
         RDB_USER: Joi.string().required(),
         RDB_NAME: Joi.string().required(),
+        KAFKA_BROKER_URL: Joi.string().required(),
       }),
     };
   }
@@ -32,11 +33,13 @@ export class AppConfigService {
     return connectionString;
   }
 
-  static getKafkaClientOptions(): KafkaOptions['options'] {
+  static getKafkaClientOptions(
+    configService: ConfigService,
+  ): KafkaOptions['options'] {
     const option = {
       client: {
         clientId: 'nestjs',
-        brokers: ['localhost:9092', 'localhost:9093', 'localhost:9094'],
+        brokers: configService.get<string>('KAFKA_BROKER_URL').split(','),
       },
       consumer: {
         groupId: 'nestjs-consumer',
@@ -45,10 +48,10 @@ export class AppConfigService {
     return option;
   }
 
-  static getKafkaMSAOptions() {
+  static getKafkaMSAOptions(configService: ConfigService) {
     const kafkaOptions: KafkaOptions = {
       transport: Transport.KAFKA,
-      options: this.getKafkaClientOptions(),
+      options: this.getKafkaClientOptions(configService),
     };
 
     return kafkaOptions;

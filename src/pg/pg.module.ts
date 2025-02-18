@@ -4,16 +4,21 @@ import { CompletePaymentHandler } from './events/complete-payment.handler';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AppConfigService } from '../configs/configs.service';
 import { PgController } from './presentation/pg.controller';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
+        inject: [ConfigService],
         name: 'KAFKA_CLIENT',
-        transport: Transport.KAFKA,
-        options: {
-          ...AppConfigService.getKafkaClientOptions(),
-        },
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            ...AppConfigService.getKafkaClientOptions(configService),
+          },
+        }),
       },
     ]),
   ],

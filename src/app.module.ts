@@ -6,7 +6,7 @@ import { BalanceModule } from './modules/balance/balance.module';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppConfigService } from './configs/configs.service';
 import { PrismaModule } from './infrastructure/database/prisma.module';
 import { CustomerModule } from './modules/customer/customer.module';
@@ -33,11 +33,15 @@ const serviceModules = [
     ConfigModule.forRoot(AppConfigService.getEnvConfigs()),
     PrismaModule,
     CustomerModule,
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
+        inject: [ConfigService],
         name: 'KAFKA_CLIENT',
-        transport: Transport.KAFKA,
-        options: AppConfigService.getKafkaClientOptions(),
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: AppConfigService.getKafkaClientOptions(configService),
+        }),
       },
     ]),
     ScheduleModule.forRoot(),

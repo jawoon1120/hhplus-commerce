@@ -6,11 +6,13 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppConfigService } from './configs/configs.service';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
   app.connectMicroservice<MicroserviceOptions>(
-    AppConfigService.getKafkaMSAOptions(),
+    AppConfigService.getKafkaMSAOptions(configService),
   );
 
   const config = new DocumentBuilder()
