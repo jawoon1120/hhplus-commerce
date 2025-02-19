@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PgService } from './application/pg.service';
-import { CompletePaymentHandler } from './events/complete-payment.handler';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AppConfigService } from '../configs/configs.service';
 import { PgController } from './presentation/pg.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { OutboxModule } from '../infrastructure/outbox/outbox.module';
 
 @Module({
   imports: [
@@ -21,9 +21,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         }),
       },
     ]),
+    OutboxModule,
   ],
-  providers: [PgService, CompletePaymentHandler],
-  exports: [CompletePaymentHandler],
+  providers: [PgService],
   controllers: [PgController],
 })
 export class PgModule {}
