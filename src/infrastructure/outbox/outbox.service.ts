@@ -28,4 +28,17 @@ export class OutboxService {
       data: { status },
     });
   }
+
+  async handleDeadMessage(minutes: number) {
+    const deadMessages = await this.prisma.outbox.findMany({
+      where: {
+        status: OutboxStatus.INIT,
+        createdAt: {
+          lt: new Date(Date.now() - 1000 * 60 * minutes),
+        },
+      },
+    });
+
+    return deadMessages;
+  }
 }
