@@ -4,9 +4,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { AppConfigService } from './configs/configs.service';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  app.connectMicroservice<MicroserviceOptions>(
+    AppConfigService.getKafkaMSAOptions(configService),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('항해 이커머스')
@@ -30,6 +37,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
+  await app.startAllMicroservices();
   await app.listen(3000);
 }
 bootstrap();
