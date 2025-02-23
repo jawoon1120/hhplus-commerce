@@ -13,7 +13,7 @@ import { CustomerModule } from '../customer/customer.module';
 import { BalanceModule } from '../balance/balance.module';
 import { OrderModule } from '../order/order.module';
 import { IoRedisModule } from '../../infrastructure/redis/redis.module';
-import { OutboxModule } from '../../infrastructure/outbox/outbox.module';
+import { OutboxModule } from '../../providers/outbox/outbox.module';
 import { CompletePaymentHandler } from './events/complete-payment.handler';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';

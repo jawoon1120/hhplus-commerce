@@ -1,8 +1,8 @@
 import { Controller, Inject } from '@nestjs/common';
 import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
-import { OutboxService } from '../../infrastructure/outbox/outbox.service';
+import { OutboxService } from '../../providers/outbox/outbox.service';
 import { CompletePaymentMessage } from '../../modules/payment/events/complete-payment.message';
-import { OutboxStatus } from '../../infrastructure/outbox/outbox-status.enum';
+import { OutboxStatus } from '../../providers/outbox/outbox-status.enum';
 
 @Controller()
 export class PgController {

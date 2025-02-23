@@ -1,10 +1,10 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { CompletePaymentEvent } from './complete-payment.event';
-import { OutboxService } from '../../../infrastructure/outbox/outbox.service';
-import { OutboxStatus } from '../../../infrastructure/outbox/outbox-status.enum';
 import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { CompletePaymentMessage } from './complete-payment.message';
+import { OutboxService } from '../../../providers/outbox/outbox.service';
+import { OutboxStatus } from '../../../providers/outbox/outbox-status.enum';
 
 // TODO: 이미 마이크로서비스 세팅했는데 kafka 연결관련 OnModuleInit, OnModuleDestroy 로직 필요 X
 @EventsHandler(CompletePaymentEvent)
