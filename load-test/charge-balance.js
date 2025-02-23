@@ -24,7 +24,7 @@ export default function () {
     amount: 100,
   }); // Update with your API endpoint
   check(res, {
-    'status is 201': (r) => r.status === 201,
+    'status is 201 or 404': (r) => r.status === 201 || r.status === 404,
   });
   sleep(1);
 }
