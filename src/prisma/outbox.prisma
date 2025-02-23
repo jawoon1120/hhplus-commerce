@@ -8,3 +8,5 @@ model Outbox {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
+
+// TODO: message는 Json 타입으로 변경

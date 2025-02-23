@@ -6,6 +6,7 @@ import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { CompletePaymentMessage } from './complete-payment.message';
 
+// TODO: 이미 마이크로서비스 세팅했는데 kafka 연결관련 OnModuleInit, OnModuleDestroy 로직 필요 X
 @EventsHandler(CompletePaymentEvent)
 export class CompletePaymentHandler
   implements IEventHandler<CompletePaymentEvent>, OnModuleInit, OnModuleDestroy
@@ -14,7 +15,7 @@ export class CompletePaymentHandler
     private outboxService: OutboxService,
     @Inject('KAFKA_CLIENT') private readonly kafkaClient: ClientKafka,
   ) {}
-
+  // TODO: 예외처리 부재함 추가이후 테스트도 추가해야함
   async handle(event: CompletePaymentEvent) {
     const { paymentId, finalPrice, orderId } = event;
 
