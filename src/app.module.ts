@@ -19,6 +19,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PrometheusModule } from './prometheus/prometheus.module';
 
 const serviceModules = [
   CouponModule,
@@ -69,6 +70,7 @@ const serviceModules = [
       }),
     }),
     CqrsModule.forRoot(),
+    PrometheusModule,
   ],
   controllers: [AppController],
   providers: [AppService],
