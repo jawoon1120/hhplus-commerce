@@ -103,3 +103,15 @@ k6 run --verbose load-test/make-payment.js
 ```bash
 k6 run --verbose load-test/issue-coupon.js
 ```
+
+
+### k6 & grafana 설정
+```bash
+git clone https://github.com/grafana/k6 && cd k6
+git submodule update --init
+docker-compose up -d influxdb grafana
+k6 run --out influxdb=http://localhost:8086 sample.js
+```
+
+
+
