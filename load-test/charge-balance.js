@@ -4,14 +4,17 @@ import http from 'k6/http';
 
 export let options = {
   scenarios: {
-    constant_load: {
-      executor: 'constant-vus',
-      vus: 20,
-      duration: '10s',
+    load_test: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '2m', target: 100 }, // 점진적으로 100명까지 증가
+        { duration: '5m', target: 100 }, // 5분 동안 100명 유지
+        { duration: '2m', target: 0 }, // 점진적으로 감소
+      ],
     },
   },
 };
-
 // VU별 시작 customerId 설정
 const getCustomerIdRange = (vuId) => {
   const startCustomerId = 1 + (vuId - 1) * 10; // VU 1은 10000011부터, VU 2는 10000021부터...
@@ -38,14 +41,16 @@ export default function () {
     customerId: currentCustomerId,
     amount: 100,
   });
-  console.log(currentCustomerId);
+
   let res = http.post(
-    `http://localhost:3000/users/${currentCustomerId}/balances`,
+    `http://localhost:4000/users/${currentCustomerId}/balances`,
     body,
     params,
   );
+
   check(res, {
     'status is 201': (r) => r.status === 201,
   });
+
   sleep(1);
 }

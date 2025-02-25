@@ -3,16 +3,22 @@ import http from 'k6/http';
 
 export let options = {
   scenarios: {
-    constant_load: {
-      executor: 'constant-vus',
-      vus: 10,
-      duration: '10s',
+    stress_test: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '2m', target: 100 }, // 정상 부하
+        { duration: '5m', target: 200 }, // 스트레스 부하
+        { duration: '2m', target: 300 }, // 피크 부하
+        { duration: '2m', target: 0 }, // 정리
+      ],
     },
   },
 };
+
 // VU별 시작 orderId 설정
 const getOrderIdRange = (vuId) => {
-  const startOrderId = 10000001 + (vuId - 1) * 10; // VU 1은 11부터, VU 2는 21부터...
+  const startOrderId = 10002000 + (vuId - 1) * 100; // VU 1은 11부터, VU 2는 21부터...
   return startOrderId;
 };
 
@@ -37,7 +43,7 @@ export default function () {
     customerId: 1,
   });
 
-  let res = http.post('http://localhost:3000/payment', body, params); // Update with your API endpoint
+  let res = http.post('http://localhost:4000/payment', body, params); // Update with your API endpoint
 
   check(res, {
     'status is 201': (r) => r.status === 201,
