@@ -55,7 +55,6 @@ export class CouponService {
   async registerIssueCouponWaitingList(
     customerId: number,
     couponId: number,
-
   ): Promise<void> {
     let couponInfo = await this.couponRepository.getCouponInfo(couponId);
     if (!couponInfo) {
@@ -66,9 +65,23 @@ export class CouponService {
         endDate: newCoupon.endDate,
       };
       await this.couponRepository.setCouponInfo(couponId, couponInfo);
-      const cronJob = this.generateIssueCouponCronJob(couponId);
-      this.schedulerRegistry.addCronJob(`ISSUE_COUPON_${couponId}`, cronJob);
-      cronJob.start();
+      try {
+        const existingJob = this.schedulerRegistry.getCronJob(
+          `ISSUE_COUPON_${couponId}`,
+        );
+        if (!existingJob) {
+          const cronJob = this.generateIssueCouponCronJob(couponId);
+          this.schedulerRegistry.addCronJob(
+            `ISSUE_COUPON_${couponId}`,
+            cronJob,
+          );
+          cronJob.start();
+        }
+      } catch {
+        const cronJob = this.generateIssueCouponCronJob(couponId);
+        this.schedulerRegistry.addCronJob(`ISSUE_COUPON_${couponId}`, cronJob);
+        cronJob.start();
+      }
     }
 
     if (couponInfo.startDate > new Date()) {

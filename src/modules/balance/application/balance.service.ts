@@ -18,7 +18,8 @@ export class BalanceService {
     const balance =
       await this.balanceRepository.getBalanceByUserIdWithLock(customerId);
     if (!balance) {
-      throw new NotFoundException('Balance not found');
+      const balance = new Balance({ customerId, amount });
+      return await this.balanceRepository.createBalance(balance);
     }
     balance.chargeBalance(amount);
     return await this.balanceRepository.chargeBalance(balance);

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { OutboxService } from './outbox.service';
-import { PrismaModule } from '../database/prisma.module';
+import { PrismaModule } from '../../infrastructure/database/prisma.module';
 import { OutboxScheduler } from './outbox.scheduler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ClientsModule, Transport } from '@nestjs/microservices';

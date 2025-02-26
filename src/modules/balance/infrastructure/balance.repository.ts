@@ -14,6 +14,12 @@ export class BalanceRepository implements IBalanceRepository {
     private readonly balanceDataMapper: BalanceDataMapper,
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
+  async createBalance(balance: Balance): Promise<Balance> {
+    const createdBalance = await this.prisma.balance.create({
+      data: { customerId: balance.customerId, amount: balance.amount },
+    });
+    return this.balanceDataMapper.toDomain(createdBalance);
+  }
 
   async getBalanceByUserId(customerId: number): Promise<Balance> {
     const balance: BalanceEntity = await this.prisma.balance.findUnique({
